@@ -2,10 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes slideUp {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
 @layer {
   :root {
     --color-light-gray: 28 28 28;
     --color-primary: 252 248 25;
     --color-secondary: 0 199 40;
+  }
+}
+
+@layer utilities {
+  .u-slideUp {
+    animation: slideUp 0.2s ease forwards;
+  }
+
+  .u-fadeIn {
+    animation: fadeIn 0.2s ease forwards;
   }
 }
