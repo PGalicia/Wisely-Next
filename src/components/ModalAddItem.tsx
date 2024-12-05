@@ -13,6 +13,9 @@ import ModalDefault from '@/components/ModalDefault';
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { ExclamationTriangleIcon } from '@heroicons/react/16/solid'
 
+// Constans
+import { ADD_WISHLIST, GET_WISHLIST } from '@/constants/GraphQLQueries';
+
 // React
 import { useState } from 'react';
 
@@ -23,37 +26,6 @@ import { closeAddItemModal } from '@/redux/features/modalSlice';
 // Types
 import type { AppDispatch } from '@/redux/store';
 import { useId } from 'react';
-
-// @TODO: Move this elsewhere
-const GET_WISHLIST = gql`
-  query{
-    getAllWishlist{
-      id,
-      itemName,
-      itemLink,
-      itemDescription,
-      priority,
-      currentAmount,
-      targetAmount
-    }
-  }
-`;
-
-// @TODO: Move this elsewhere
-const ADD_WISHLIST = gql`
-  mutation CreateWishlist($itemName: String!, $targetAmount: Number!){
-    createWishlist(
-      itemName: $itemName,
-      targetAmount: $targetAmount
-    ) {
-      id,
-      itemName,
-      priority,
-      currentAmount,
-      targetAmount 
-    }
-  }
-`;
 
 interface InputDefaultProps {
   label: string;

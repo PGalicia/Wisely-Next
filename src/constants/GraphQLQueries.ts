@@ -27,3 +27,18 @@ export const GET_WISHLIST = gql`
     }
   }
 `;
+
+export const ADD_WISHLIST = gql`
+mutation CreateWishlist($itemName: String!, $targetAmount: Number!){
+  createWishlist(
+    itemName: $itemName,
+    targetAmount: $targetAmount
+  ) {
+    id,
+    itemName,
+    priority,
+    currentAmount,
+    targetAmount 
+  }
+}
+`;
