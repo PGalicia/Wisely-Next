@@ -1,10 +1,17 @@
 interface ModalDefaultProps {
   children: React.ReactNode;
-  name: string;
+  isFull?: boolean;
   onCloseClick: () => void;
 }
 
-export default function ModalDefault ({ name, children, onCloseClick }: ModalDefaultProps) {
+export default function ModalDefault ({ children, isFull = false, onCloseClick }: ModalDefaultProps) {
+  const mainDefaultClasses = 'absolute bg-[#F6F6F6] overflow-hidden u-slideUp';
+  const mainShapeAndPositionClasses = isFull
+    ? 'top-0 left-0 h-screen w-screen'
+    : 'bottom-0 h-auto rounded-t-3xl';
+
+  const mainClasses = mainDefaultClasses.concat(' ', mainShapeAndPositionClasses);
+
   return (
     <div
       className="fixed top-0 bottom-0 left-0 right-0 bg-black/70 flex justify-center p-0 sm:p-8 z-[100] items-center u-fadeIn"
@@ -15,24 +22,9 @@ export default function ModalDefault ({ name, children, onCloseClick }: ModalDef
         onClick={e => e.stopPropagation()}
       > */}
       <div
-        className="absolute bottom-0 h-auto bg-white rounded-t-3xl overflow-hidden u-slideUp"
+        className={mainClasses}
         onClick={e => e.stopPropagation()}
       >
-        {/* Modal header */}
-        {/* <div className="bg-secondary border-b-4 border-solid border-lightGray py-2 px-4 flex justify-between"> */}
-        {/* <div className="pt-4 px-4 flex justify-between">
-          <div className="font-mono uppercase font-bold text-base">
-            {name}
-          </div>
-
-          <div
-            className="w-8 cursor-pointer hover:text-white text-right"
-            onClick={() => onCloseClick()}
-          >
-            x
-          </div>
-        </div> */}
-
         {children}
       </div>
     </div>

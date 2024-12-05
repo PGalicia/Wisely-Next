@@ -22,6 +22,14 @@
 	}
 }
 
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  50% { transform: translateX(3px); }
+  75% { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
+}
+
 @layer {
   :root {
     --color-light-gray: 28 28 28;
@@ -37,5 +45,9 @@
 
   .u-fadeIn {
     animation: fadeIn 0.2s ease forwards;
+  }
+
+  .u-shake {
+    animation: shake 0.3s;
   }
 }

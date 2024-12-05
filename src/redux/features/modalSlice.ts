@@ -9,6 +9,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
  */
 const initialState = {
   isDeleteConfirmationModalActive: false,
+  isAddItemModalActive: false,
   targetWishlistId: '',
   targetWishlistName: ''
 }
@@ -37,11 +38,24 @@ const modal = createSlice({
       state.targetWishlistId = '';
       state.targetWishlistName = '';
     },
+
+    // Add item
+    openAddItemModal: (state) => {
+      state.isAddItemModalActive = true;
+    },
+    closeAddItemModal: (state) => {
+      state.isAddItemModalActive = false;
+    },
   }
 })
 
 export const {
+  // Delete confirmation
   openDeleteConfirmationModal,
   closeDeleteConfirmationModal,
+
+  // Add item
+  openAddItemModal,
+  closeAddItemModal
 } = modal.actions
 export default modal.reducer

@@ -8,12 +8,15 @@ import { useQuery, gql, useMutation } from '@apollo/client';
 // Components
 import WishlistItem from '@/components/WishlistItem';
 import ModalDeleteConfirmation from '@/components/ModalDeleteConfirmation';
+import ModalAddItem from '@/components/ModalAddItem';
 
 // React
 import { useSelector } from 'react-redux';
 
 // Redux
 import { AppDispatch, RootState } from '@/redux/store';
+import { useDispatch } from 'react-redux';
+import { openAddItemModal } from '@/redux/features/modalSlice';
 
 // Types
 import type { WislistType } from '@/types/WishlistType';
@@ -63,8 +66,12 @@ function formatWishlistQuery(queryObj: any) {
 }
 
 export default function Home() {
+  // Dispatch
+  const dispatch = useDispatch<AppDispatch>();
+  
   // Redux
   const isDeleteConfirmationModalActive = useSelector((state: RootState) => state.modalReducer.isDeleteConfirmationModalActive);
+  const isAddItemModalActive = useSelector((state: RootState) => state.modalReducer.isAddItemModalActive);
 
   const { loading, error, data = [] } = useQuery(GET_WISHLIST);
 
@@ -87,17 +94,23 @@ export default function Home() {
     removeWishlistMutation({ variables: { id } });
   }
 
+  function onAddNewItemClick() {
+    dispatch(openAddItemModal());
+  }
+
   return (
     <main className="m-4">
-      <h1>Hello World</h1>
+      <h1 className="u-shake">Hello World</h1>
 
-      <input className="text-black" type="text" onKeyDown={
+      {/* <input className="text-black" type="text" onKeyDown={
         (e) => {
           if (e.key === "Enter") {
             handleSubmit((e.target as HTMLInputElement).value);
           }
         }
-      }/>
+      }/> */}
+
+      <button onClick={() => onAddNewItemClick()}>Add new item</button>
 
       <div className="flex flex-col gap-4">
         {
@@ -108,6 +121,7 @@ export default function Home() {
       </div>
 
       {isDeleteConfirmationModalActive && <ModalDeleteConfirmation />}
+      {isAddItemModalActive && <ModalAddItem />}
     </main>
   );
 }

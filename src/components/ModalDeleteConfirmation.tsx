@@ -48,7 +48,6 @@ export default function ModalDeleteConfirmation () {
 
   return (
     <ModalDefault
-      name="Are you sure?"
       onCloseClick={() => onCloseClick()}
     >
       <div className="flex flex-col h-full justify-between max-w-[500px] p-4">
@@ -57,8 +56,8 @@ export default function ModalDeleteConfirmation () {
         </div>
 
         <div className="p-4 w-full flex flex-col gap-2">
-          <ButtonDefault buttonText="Cancel" onClick={() => onCloseClick()} isSecondary={true} extraClasses="" />
-          <ButtonDefault buttonText="Confirm" onClick={() => onConfirmClick()} extraClasses="" />
+          <ButtonDefault buttonText="Cancel" onClick={() => onCloseClick()} isSecondary={true} />
+          <ButtonDefault buttonText="Confirm" onClick={() => onConfirmClick()} />
         </div>
       </div>
     </ModalDefault>
