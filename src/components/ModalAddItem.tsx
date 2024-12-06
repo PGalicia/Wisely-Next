@@ -4,14 +4,16 @@
  * Imports
  */
 // Apollo
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 
 // Componets
 import ButtonDefault from '@/components/ButtonDefault';
+import InputNumber from '@/components/InputNumber';
+import InputText from '@/components/InputText';
 import LabelDefault from '@/components/LabelDefault';
 import ModalDefault from '@/components/ModalDefault';
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import { ExclamationTriangleIcon } from '@heroicons/react/16/solid'
+import { ExclamationTriangleIcon } from '@heroicons/react/16/solid';
 
 // Constans
 import { ADD_WISHLIST, GET_WISHLIST } from '@/constants/GraphQLQueries';
@@ -192,7 +194,10 @@ function TextAreaDefault({ label, isRequired = false, extraClasses = "" }: TextA
 
 export default function ModalAddItem () {
   // State
-  const [isFormValid, setIsFormValid] = useState(false);
+  const [itemName, setItemName] = useState('');
+  const [isErrorShowingItemName, setIsErrorShowingItemName] = useState(false);
+  const [targetPrice, setTargetPrice] = useState('');
+  const [isErrorShowingTargetPrice, setIsErrorShowingTargetPrice] = useState(false);
 
   // Dispatch
   const dispatch = useDispatch<AppDispatch>();
@@ -232,26 +237,82 @@ export default function ModalAddItem () {
   function onFormSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const formElement = event.currentTarget;
-    const data: FormData = new FormData(formElement);
+    let isAnyErrorShowing = false;
 
-    // console.log('form submit', data.get("name"));
-    console.log('form submit', data.get('target price'), typeof data.get('target price'));
-    for (const [key, value] of data.entries()) {
-      console.log(`${key}: ${value}`);
+    if (itemName.length === 0) {
+      setIsErrorShowingItemName(true);
+      isAnyErrorShowing = true;
     }
 
-    // createWishlistMutation({ variables: {
-    //   itemName: data.get('name'),
-    //   targetAmount: data.get('target price')
-    // } })
-    //   .then((x: any) => {
-    //     console.log('whats here', x);
-    //   })
-    //   .catch((err: any) => {
-    //     // @TODO: Need a better err response in the backend
-    //     console.log('error', err);
-    //   });
+    if (targetPrice.length === 0 || parseFloat(targetPrice) <= 0) {
+      setIsErrorShowingTargetPrice(true);
+      isAnyErrorShowing = true;
+    }
+
+    if (isAnyErrorShowing) {
+      return;
+    }
+
+    createWishlistMutation({ variables: {
+      itemName,
+      targetAmount: parseFloat(targetPrice)
+    } })
+      .then((x: any) => {
+        console.log('whats here', x);
+      })
+      .catch((err: any) => {
+        // @TODO: Need a better err response in the backend
+        console.log('error', err);
+      })
+      .finally(() => {
+        // Close modal
+        onCloseClick()
+      });
+  }
+
+  // When updating itemName input
+  function onInputDefaultChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setIsErrorShowingItemName(false);
+    setItemName(event.target.value);
+  }
+
+  // When unfocusing itemName input
+  function onInputDefaultBlur() {
+    // If itemName is empty, mark that the input should show the error
+    if (itemName.length === 0) {
+      setIsErrorShowingItemName(true);
+    }
+  }
+
+  // When unfocusing target price input
+  function onInputNumberBlur() {
+    // If the value is empty OR if the value is less than 0, mark that the input should show the error
+    if (targetPrice.length === 0 || parseFloat(targetPrice) <= 0) {
+      setIsErrorShowingTargetPrice(true);
+    }
+  }
+
+  // When updating target price input
+  function onInputNumberChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const inputValue = event.target.value;
+
+    // Match numbers with up to two decimal places
+    if (/^\d*\.?\d{0,2}$/.test(inputValue)) {
+      setIsErrorShowingTargetPrice(false);
+      setTargetPrice(inputValue);
+    }
+  };
+
+  // Prevent certain values from popping on in 'number' type input element
+  function onInputNumberKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'e' || event.key === 'E' || event.key === '+' || event.key === '-') {
+      event.preventDefault();
+    }
+  }
+
+  // Disable submit button if there are any input errors
+  function isSubmitButtonDisabled(): boolean {
+    return isErrorShowingItemName || isErrorShowingTargetPrice;
   }
 
   return (
@@ -271,14 +332,35 @@ export default function ModalAddItem () {
           <XMarkIcon />
         </button>
 
-        <InputDefault label="Name" isRequired={true} extraClasses="my-4" />
-        <InputDefault type="number" label="Target price" isRequired={true} extraClasses="my-4" />
+        <InputText
+          label="Name"
+          isRequired={true}
+          extraClasses="my-4"
+          inputValue={itemName}
+          errorMessage="This cannot be empty"
+          onChange={onInputDefaultChange}
+          onBlur={onInputDefaultBlur}
+          isErrorShowing={isErrorShowingItemName}
+        />
+
+        <InputNumber
+          label="Target Price"
+          isRequired={true}
+          extraClasses="my-4"
+          inputValue={targetPrice}
+          errorMessage="This cannot be empty or zero"
+          onChange={onInputNumberChange}
+          onBlur={onInputNumberBlur}
+          onKeyDown={onInputNumberKeyDown}
+          isErrorShowing={isErrorShowingTargetPrice}
+        />
+
         {/* <InputDefault type="url" label="Item link" extraClasses="my-4" />
         <SelectDefault label="Priority" name="priority" options={priorityOptions} defaultValue="3" />
         <TextAreaDefault label="Item Description" extraClasses="my-4" /> */}
 
         <div className="fixed w-full left-0 bottom-0 p-4 border-t border-black">
-          <ButtonDefault buttonText="Add Item" onClick={() => {}} extraClasses="w-full" />
+          <ButtonDefault buttonText="Add Item" onClick={() => {}} extraClasses="w-full" isDisabled={isSubmitButtonDisabled()} />
         </div>
       </form>
     </ModalDefault>
