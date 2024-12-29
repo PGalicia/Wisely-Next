@@ -38,8 +38,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F6F6F6]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F6F6F6] max-w-3xl my-0 mx-auto`}
       >
+        <h1 className="text-3xl font-black p-4">Wisely 💰</h1>
         <ReduxProvider>
           <ApolloClientWrapper>
             {children}

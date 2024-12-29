@@ -3,12 +3,14 @@
  * Imports
  */
 // Apollo
-import { useQuery, gql, useMutation } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 
 // Components
-import WishlistItem from '@/components/WishlistItem';
+import BalanceDefault from '@/components/BalanceDefault';
+import ButtonAdd from '@/components/ButtonAdd';
 import ModalDeleteConfirmation from '@/components/ModalDeleteConfirmation';
 import ModalAddItem from '@/components/ModalAddItem';
+import WishlistItem from '@/components/WishlistItem';
 
 // Constants
 import { GET_WISHLIST } from '@/constants/GraphQLQueries';
@@ -43,10 +45,12 @@ export default function Home() {
   }
 
   return (
-    <main className="m-4">
-      <h1 className="u-shake">Hello World</h1>
+    <main className="m-5 pb-28">
+      <BalanceDefault />
 
-      <button onClick={() => onAddNewItemClick()}>Add new item</button>
+      <ButtonAdd buttonText="Add" onClick={onAddNewItemClick} />
+
+      <div className="uppercase mb-2 font-mono font-bold">Wishlist</div>
 
       <div className="flex flex-col gap-4">
         {

@@ -1,6 +1,15 @@
 /**
  * Imports
  */
+// Apollo
+import { useMutation } from '@apollo/client';
+
+// Components
+import { CheckIcon } from '@heroicons/react/16/solid';
+
+// Constants
+import { UPDATE_WISHLIST } from '@/constants/GraphQLQueries';
+
 // React
 import { useRef, useState, useEffect } from 'react';
 
@@ -142,6 +151,9 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
   // Ref
   const poppableRef = useRef<HTMLDivElement>(null);
 
+  // Use the useMutation hook to call the mutation
+  const [updateWishlist, { data, loading, error }] = useMutation(UPDATE_WISHLIST);
+
   // Use effect
   useEffect(() => {
     // Set the height - this is to make sure that the module is popping up on the right spot
@@ -156,6 +168,30 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
   // Methods
   function onItemClick(): void {
     setIsExtraShowing(!isExtraShowing);
+  }
+
+  function onCompleteCheckClick(event: React.MouseEvent<HTMLButtonElement>): void {
+    event.stopPropagation();
+
+    console.log('func complete click');
+    // Mark it as complete
+      // Remove it from the list
+    // Adjust the budget
+
+    updateWishlist({
+      variables: {
+        id,
+        itemName,
+        itemLink,
+        itemDescription,
+        priority,
+        targetAmount,
+        isComplete: true
+      }
+    })
+    .then(() => console.log('Update went through!'))
+    .catch((err) => console.error(err));
+
   }
 
   function modifyPrice(price: number): string {
@@ -197,7 +233,17 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
             <PriorityPill priority={priority!} />
           </div>
 
-          <CircularProgressBar percentage={grabPercentage(currentAmount, targetAmount)} />
+          <div className="relative self-center">
+            {grabPercentage(currentAmount, targetAmount) >= 100 && 
+              <button
+                className="absolute bg-[#5CD66A] z-10 rounded-full h-full w-full flex items-center justify-center"
+                onClick={onCompleteCheckClick}
+              >
+                <CheckIcon className="size-10" />
+              </button>
+            }
+            <CircularProgressBar percentage={grabPercentage(currentAmount, targetAmount)} />
+          </div>
         </div>
       </div>
 
