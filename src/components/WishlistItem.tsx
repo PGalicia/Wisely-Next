@@ -2,13 +2,13 @@
  * Imports
  */
 // Apollo
-import { useMutation } from '@apollo/client';
+import { FetchResult, useMutation } from '@apollo/client';
 
 // Components
 import { CheckIcon } from '@heroicons/react/16/solid';
 
 // Constants
-import { UPDATE_WISHLIST } from '@/constants/GraphQLQueries';
+import { UPDATE_WISHLIST, MUTATION_NAME_UPDATE_WISHLIST } from '@/constants/GraphQLQueries';
 
 // React
 import { useRef, useState, useEffect } from 'react';
@@ -16,6 +16,7 @@ import { useRef, useState, useEffect } from 'react';
 // Redux
 import { useDispatch } from 'react-redux';
 import { openDeleteConfirmationModal } from '@/redux/features/modalSlice';
+import { removeWishlist } from '@/redux/features/wishlistSlice';
 
 // Types
 import type { WishlistType } from '@/types/WishlistType';
@@ -151,8 +152,9 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
   // Ref
   const poppableRef = useRef<HTMLDivElement>(null);
 
-  // Use the useMutation hook to call the mutation
-  const [updateWishlist, { data, loading, error }] = useMutation(UPDATE_WISHLIST);
+  // Mutation
+  type updateWishlistMutationType = { [MUTATION_NAME_UPDATE_WISHLIST]: WishlistType; };
+  const [updateWishlist] = useMutation<updateWishlistMutationType>(UPDATE_WISHLIST);
 
   // Use effect
   useEffect(() => {
@@ -173,11 +175,6 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
   function onCompleteCheckClick(event: React.MouseEvent<HTMLButtonElement>): void {
     event.stopPropagation();
 
-    console.log('func complete click');
-    // Mark it as complete
-      // Remove it from the list
-    // Adjust the budget
-
     updateWishlist({
       variables: {
         id,
@@ -189,7 +186,12 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
         isComplete: true
       }
     })
-    .then(() => console.log('Update went through!'))
+    .then((result: FetchResult<updateWishlistMutationType>) => {
+      const { data } = result;
+      if (data) {
+        dispatch(removeWishlist(data[MUTATION_NAME_UPDATE_WISHLIST].id));
+      }
+    })
     .catch((err) => console.error(err));
 
   }

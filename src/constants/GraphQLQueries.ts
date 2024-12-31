@@ -8,6 +8,7 @@ export const QUERY_NAME_GET_ALL_WISHLIST = 'getAllWishlist';
 export const QUERY_NAME_GET_BUDGET = 'getBudget';
 export const MUTATION_NAME_CREATE_WISHLIST = 'createWishlist';
 export const MUTATION_NAME_DELETE_WISHLIST = 'deleteWishlist';
+export const MUTATION_NAME_UPDATE_WISHLIST = 'updateWishlist';
 
 export const REMOVE_WISHLIST = gql`
   mutation deleteWishlist($id: String!){
@@ -70,31 +71,31 @@ export const ADD_WISHLIST = gql`
 `;
 
 export const UPDATE_WISHLIST = gql`
-mutation UpdateWishlist(
-  $id: String!
-  $itemName: String
-  $itemLink: String
-  $itemDescription: String
-  $priority: Int
-  $targetAmount: Float
-  $isComplete: Boolean
-) {
-  updateWishlist(
-    id: $id
-    itemName: $itemName
-    itemLink: $itemLink
-    itemDescription: $itemDescription
-    priority: $priority
-    targetAmount: $targetAmount
-    isComplete: $isComplete
+  mutation UpdateWishlist(
+    $id: String!
+    $itemName: String
+    $itemLink: String
+    $itemDescription: String
+    $priority: Int
+    $targetAmount: Float
+    $isComplete: Boolean
   ) {
-    id
-    itemName
-    itemLink
-    itemDescription
-    priority
-    targetAmount
-    isComplete
+    ${MUTATION_NAME_UPDATE_WISHLIST}(
+      id: $id
+      itemName: $itemName
+      itemLink: $itemLink
+      itemDescription: $itemDescription
+      priority: $priority
+      targetAmount: $targetAmount
+      isComplete: $isComplete
+    ) {
+      id
+      itemName
+      itemLink
+      itemDescription
+      priority
+      targetAmount
+      isComplete
+    }
   }
-}
 `;
