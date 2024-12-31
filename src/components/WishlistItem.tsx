@@ -18,7 +18,7 @@ import { useDispatch } from 'react-redux';
 import { openDeleteConfirmationModal } from '@/redux/features/modalSlice';
 
 // Types
-import type { WislistType } from '@/types/WishlistType';
+import type { WishlistType } from '@/types/WishlistType';
 import type { AppDispatch } from '@/redux/store';
 
 interface PriorityPillProps {
@@ -137,7 +137,7 @@ function CircularProgressBar({ percentage }: CircularProgressBarProps) {
 }
 
 interface WishlistItemProp {
-  wishlist: WislistType
+  wishlist: WishlistType
 }
 
 export default function WishlistItem({ wishlist }: WishlistItemProp) {
@@ -163,7 +163,7 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
   }, []);
 
   // Constants
-  const { id, itemName, itemLink, itemDescription, priority, targetAmount, currentAmount } = wishlist;
+  const { id, itemName, itemLink, itemDescription, priority, targetAmount, currentAmount = 0 } = wishlist;
 
   // Methods
   function onItemClick(): void {

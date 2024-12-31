@@ -6,10 +6,12 @@ import { configureStore } from '@reduxjs/toolkit'
 
 // Features
 import modalReducer from '@/redux/features/modalSlice'
+import wishlistReducer from '@/redux/features/wishlistSlice'
 
 export const store = configureStore({
   reducer: {
-    modalReducer
+    modalReducer,
+    wishlistReducer
   }
 })
 

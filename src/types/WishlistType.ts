@@ -1,4 +1,4 @@
-export interface WislistType {
+export interface WishlistType {
   id: string;
   itemName: string;
   itemDescription?: string;

@@ -4,7 +4,7 @@
  * Imports
  */
 // Apollo
-import { useMutation } from '@apollo/client';
+import { FetchResult, useMutation } from '@apollo/client';
 
 // Componets
 import ButtonDefault from '@/components/ButtonDefault';
@@ -16,7 +16,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { ExclamationTriangleIcon } from '@heroicons/react/16/solid';
 
 // Constans
-import { ADD_WISHLIST, GET_WISHLIST } from '@/constants/GraphQLQueries';
+import { ADD_WISHLIST, MUTATION_NAME_CREATE_WISHLIST } from '@/constants/GraphQLQueries';
 
 // React
 import { useState } from 'react';
@@ -24,10 +24,12 @@ import { useState } from 'react';
 // Redux
 import { useDispatch } from 'react-redux';
 import { closeAddItemModal } from '@/redux/features/modalSlice';
+import { addWishlist } from '@/redux/features/wishlistSlice';
 
 // Types
 import type { AppDispatch } from '@/redux/store';
 import { useId } from 'react';
+import type { WishlistType } from '@/types/WishlistType';
 
 interface InputDefaultProps {
   label: string;
@@ -207,9 +209,9 @@ export default function ModalAddItem () {
     dispatch(closeAddItemModal());
   }
 
-  const [createWishlistMutation] = useMutation(ADD_WISHLIST, {
-    refetchQueries: [{ query: GET_WISHLIST }],
-  });
+  // Mutation
+  type createWishlistMutationType = { [MUTATION_NAME_CREATE_WISHLIST]: WishlistType };
+  const [createWishlistMutation] = useMutation<createWishlistMutationType>(ADD_WISHLIST);
 
   const priorityOptions: OptionType[] = [
     {
@@ -257,8 +259,15 @@ export default function ModalAddItem () {
       itemName,
       targetAmount: parseFloat(targetPrice)
     } })
-      .then((x: any) => {
-        console.log('whats here', x);
+      .then((result: FetchResult<createWishlistMutationType>) => {
+        const { data } = result;
+
+        if (data) {
+          dispatch(addWishlist({
+            ...data[MUTATION_NAME_CREATE_WISHLIST],
+            currentAmount: 0
+          }));
+        }
       })
       .catch((err: any) => {
         // @TODO: Need a better err response in the backend

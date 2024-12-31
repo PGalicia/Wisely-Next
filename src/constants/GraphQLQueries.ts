@@ -4,9 +4,14 @@
 // Apollo
 import { gql } from '@apollo/client';
 
+export const QUERY_NAME_GET_ALL_WISHLIST = 'getAllWishlist';
+export const QUERY_NAME_GET_BUDGET = 'getBudget';
+export const MUTATION_NAME_CREATE_WISHLIST = 'createWishlist';
+export const MUTATION_NAME_DELETE_WISHLIST = 'deleteWishlist';
+
 export const REMOVE_WISHLIST = gql`
   mutation deleteWishlist($id: String!){
-    deleteWishlist(
+    ${MUTATION_NAME_DELETE_WISHLIST}(
       id: $id,
     ) {
       id
@@ -16,7 +21,7 @@ export const REMOVE_WISHLIST = gql`
 
 export const GET_WISHLIST = gql`
   query{
-    getAllWishlist{
+    ${QUERY_NAME_GET_ALL_WISHLIST}{
       id,
       itemName,
       itemLink,
@@ -30,13 +35,28 @@ export const GET_WISHLIST = gql`
 
 export const GET_BUDGET = gql`
   query{
-    getBudget
+    ${QUERY_NAME_GET_BUDGET}
+  }
+`;
+
+export const GET_WISHLIST_AND_BUDGET = gql`
+  query{
+    ${QUERY_NAME_GET_ALL_WISHLIST}{
+      id,
+      itemName,
+      itemLink,
+      itemDescription,
+      priority,
+      currentAmount,
+      targetAmount
+    }
+    ${QUERY_NAME_GET_BUDGET}
   }
 `;
 
 export const ADD_WISHLIST = gql`
   mutation CreateWishlist($itemName: String!, $targetAmount: Float!) {
-    createWishlist(
+    ${MUTATION_NAME_CREATE_WISHLIST}(
       itemName: $itemName,
       targetAmount: $targetAmount
     ) {
