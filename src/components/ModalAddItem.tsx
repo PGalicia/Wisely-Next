@@ -12,6 +12,7 @@ import InputNumber from '@/components/InputNumber';
 import InputText from '@/components/InputText';
 import LabelDefault from '@/components/LabelDefault';
 import ModalDefault from '@/components/ModalDefault';
+import SelectPriority from '@/components/SelectPriority';
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { ExclamationTriangleIcon } from '@heroicons/react/16/solid';
 
@@ -30,6 +31,7 @@ import { addWishlist } from '@/redux/features/wishlistSlice';
 import type { AppDispatch } from '@/redux/store';
 import { useId } from 'react';
 import type { WishlistType } from '@/types/WishlistType';
+import type { OptionType } from '@/types/OptionType';
 
 interface InputDefaultProps {
   label: string;
@@ -132,46 +134,6 @@ function InputDefault({ type = 'text', label, isRequired = false, extraClasses =
   )
 }
 
-interface SelectDefaultProps {
-  label: string;
-  name: string;
-  options: OptionType[];
-  defaultValue: string;
-  isRequired?: boolean;
-  extraClasses?: string;
-}
-
-interface OptionType {
-  label: string;
-  value: string;
-}
-
-function SelectDefault({ label, name, options, defaultValue, isRequired = false, extraClasses = "" }: SelectDefaultProps) {
-  const selectId = useId();
-
-  return (
-    <div className={extraClasses}>
-      <LabelDefault id={selectId} name={label} isRequired={isRequired} />
-
-      <select
-        name={name}
-        id={selectId}
-        defaultValue={defaultValue}
-        className="border border-slate-300 rounded-md text-sm px-3 py-2 focus:outline-none focus:border-black w-full transition-colors"
-      >
-        {
-          options.map(({ label: optionLabel, value }, index) => (
-            <option
-              key={index}
-              value={value}
-            >{optionLabel}</option>
-          ))
-        }
-      </select>
-    </div>
-  )
-}
-
 interface TextAreaDefaultProps {
   label: string;
   isRequired?: boolean;
@@ -195,11 +157,15 @@ function TextAreaDefault({ label, isRequired = false, extraClasses = "" }: TextA
 }
 
 export default function ModalAddItem () {
+  // consts
+  const DEFAULT_PRIORITY = 3;
+
   // State
   const [itemName, setItemName] = useState('');
   const [isErrorShowingItemName, setIsErrorShowingItemName] = useState(false);
   const [targetPrice, setTargetPrice] = useState('');
   const [isErrorShowingTargetPrice, setIsErrorShowingTargetPrice] = useState(false);
+  const [itemPriority, setItemPriority] = useState(DEFAULT_PRIORITY);
 
   // Dispatch
   const dispatch = useDispatch<AppDispatch>();
@@ -216,23 +182,23 @@ export default function ModalAddItem () {
   const priorityOptions: OptionType[] = [
     {
       label: 'Low',
-      value: '1'
+      value: 1
     },
     {
       label: 'Moderately Low',
-      value: '2'
+      value: 2
     },
     {
       label: 'Medium',
-      value: '3',
+      value: 3,
     },
     {
       label: 'Moderately High',
-      value: '4'
+      value: 4
     },
     {
       label: 'High',
-      value: '5'
+      value: 5
     },
   ]
 
@@ -257,7 +223,8 @@ export default function ModalAddItem () {
 
     createWishlistMutation({ variables: {
       itemName,
-      targetAmount: parseFloat(targetPrice)
+      targetAmount: parseFloat(targetPrice),
+      priority: itemPriority
     } })
       .then((result: FetchResult<createWishlistMutationType>) => {
         const { data } = result;
@@ -324,6 +291,13 @@ export default function ModalAddItem () {
     return isErrorShowingItemName || isErrorShowingTargetPrice;
   }
 
+  // When updating priority
+  function onSelectPriorityChange(event: React.ChangeEvent<HTMLSelectElement>) {
+    const selectValue = event.target.value;
+
+    setItemPriority(parseInt(selectValue));
+  }
+
   return (
     <ModalDefault
       onCloseClick={() => onCloseClick()}
@@ -364,9 +338,15 @@ export default function ModalAddItem () {
           isErrorShowing={isErrorShowingTargetPrice}
         />
 
-        {/* <InputDefault type="url" label="Item link" extraClasses="my-4" />
-        <SelectDefault label="Priority" name="priority" options={priorityOptions} defaultValue="3" />
-        <TextAreaDefault label="Item Description" extraClasses="my-4" /> */}
+        {/* <InputDefault type="url" label="Item link" extraClasses="my-4" /> */}
+        <SelectPriority
+          label="Priority"
+          name="priority"
+          options={priorityOptions}
+          selectValue={itemPriority}
+          onChange={onSelectPriorityChange}
+        />
+        {/* <TextAreaDefault label="Item Description" extraClasses="my-4" /> */}
 
         <div className="fixed w-full left-0 bottom-0 p-4 border-t border-black">
           <ButtonDefault buttonText="Add Item" onClick={() => {}} extraClasses="w-full" isDisabled={isSubmitButtonDisabled()} />
