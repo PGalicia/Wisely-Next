@@ -10,11 +10,10 @@ import { FetchResult, useMutation } from '@apollo/client';
 import ButtonDefault from '@/components/ButtonDefault';
 import InputNumber from '@/components/InputNumber';
 import InputDefault from '@/components/InputDefault';
-import LabelDefault from '@/components/LabelDefault';
 import ModalDefault from '@/components/ModalDefault';
 import SelectPriority from '@/components/SelectPriority';
-import { XMarkIcon } from '@heroicons/react/24/outline'
-import { ExclamationTriangleIcon } from '@heroicons/react/16/solid';
+import TextAreaDefault from '@/components/TextAreaDefault';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
 // Constans
 import { ADD_WISHLIST, MUTATION_NAME_CREATE_WISHLIST } from '@/constants/GraphQLQueries';
@@ -29,34 +28,12 @@ import { addWishlist } from '@/redux/features/wishlistSlice';
 
 // Types
 import type { AppDispatch } from '@/redux/store';
-import { useId } from 'react';
 import type { WishlistType } from '@/types/WishlistType';
 import type { OptionType } from '@/types/OptionType';
 
 // Utils
 import isAValidURL from '@/utils/isAValidURL';
-
-interface TextAreaDefaultProps {
-  label: string;
-  isRequired?: boolean;
-  extraClasses?: string;
-}
-
-function TextAreaDefault({ label, isRequired = false, extraClasses = "" }: TextAreaDefaultProps) {
-  const textAreaId = useId();
-
-  return(
-    <div className={extraClasses}>
-      <LabelDefault id={textAreaId} name={label} isRequired={isRequired} />
-
-      <textarea
-        name={label}
-        id={textAreaId}
-        className="border border-slate-300 rounded-md text-sm px-3 py-2 focus:outline-none focus:border-black w-full transition-colors"
-      ></textarea>
-    </div>
-  )
-}
+import stringToValidURL from '@/utils/stringToValidURL';
 
 export default function ModalAddItem () {
   // consts
@@ -70,6 +47,7 @@ export default function ModalAddItem () {
   const [itemPriority, setItemPriority] = useState(DEFAULT_PRIORITY);
   const [itemLink, setItemLink] = useState('');
   const [isErrorShowingItemLink, setIsErrorShowingItemLink] = useState(false);
+  const [itemDescription, setItemDescription] = useState('');
 
   // Dispatch
   const dispatch = useDispatch<AppDispatch>();
@@ -134,7 +112,8 @@ export default function ModalAddItem () {
       itemName,
       targetAmount: parseFloat(targetPrice),
       priority: itemPriority,
-      itemLink
+      itemLink: stringToValidURL(itemLink) || '',
+      itemDescription
     } })
       .then((result: FetchResult<createWishlistMutationType>) => {
         const { data } = result;
@@ -159,7 +138,7 @@ export default function ModalAddItem () {
   // When updating itemName input
   function onInputItemNameChange(event: React.ChangeEvent<HTMLInputElement>) {
     setIsErrorShowingItemName(false);
-    setItemName(event.target.value);
+    setItemName(event.target.value.trim());
   }
 
   // When unfocusing itemName input
@@ -173,7 +152,7 @@ export default function ModalAddItem () {
   // When updating itemLink input
   function onInputItemLinkChange(event: React.ChangeEvent<HTMLInputElement>) {
     setIsErrorShowingItemLink(false);
-    setItemLink(event.target.value);
+    setItemLink(event.target.value.trim());
   }
 
   // When unfocusing itemLink input
@@ -220,6 +199,11 @@ export default function ModalAddItem () {
     const selectValue = event.target.value;
 
     setItemPriority(parseInt(selectValue));
+  }
+
+  // When updating itemDescription input
+  function onTextAreaItemDescriptionChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
+    setItemDescription(event.target.value.trim());
   }
 
   return (
@@ -279,7 +263,13 @@ export default function ModalAddItem () {
           selectValue={itemPriority}
           onChange={onSelectPriorityChange}
         />
-        {/* <TextAreaDefault label="Item Description" extraClasses="my-4" /> */}
+
+        <TextAreaDefault
+          label="Item Description"
+          extraClasses="my-4"
+          inputValue={itemDescription}
+          onChange={onTextAreaItemDescriptionChange}
+        />
 
         <div className="fixed w-full left-0 bottom-0 p-4 border-t border-black">
           <ButtonDefault buttonText="Add Item" onClick={() => {}} extraClasses="w-full" isDisabled={isSubmitButtonDisabled()} />

@@ -22,6 +22,9 @@ import { removeWishlist } from '@/redux/features/wishlistSlice';
 import type { WishlistType } from '@/types/WishlistType';
 import type { AppDispatch } from '@/redux/store';
 
+// Utils
+import stringToValidURL from '@/utils/stringToValidURL';
+
 interface PriorityPillProps {
   priority: number
 }
@@ -143,14 +146,16 @@ interface WishlistItemProp {
 
 export default function WishlistItem({ wishlist }: WishlistItemProp) {
   // States
-  const [isExtraShowing, setIsExtraShowing] = useState(false);
+  const [isExtraShowing, setIsExtraShowing] = useState(true);
   const [poppableHeight, setPoppableHeight] = useState<number>(0);
+  const [mainHeight, setMainHeight] = useState<number>(0);
 
   // Dispatch
   const dispatch = useDispatch<AppDispatch>();
 
   // Ref
   const poppableRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
 
   // Mutation
   type updateWishlistMutationType = { [MUTATION_NAME_UPDATE_WISHLIST]: WishlistType; };
@@ -158,9 +163,11 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
 
   // Use effect
   useEffect(() => {
-    // Set the height - this is to make sure that the module is popping up on the right spot
-    if (poppableRef.current) {
+    // Set the height - this is to make sure that the module is popping up on the right spot and to prevent weird overflow effect
+    if (poppableRef.current && mainRef.current) {
       setPoppableHeight(poppableRef.current.getBoundingClientRect().height);
+      setMainHeight(mainRef.current.getBoundingClientRect().height);
+      setIsExtraShowing(false);
     }
   }, []);
 
@@ -215,17 +222,26 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
     }))
   }
 
+  // Calculate the height of the container - This is needed to allow the popping out animation when item is clicked
+  function containerHeight() {
+    if (poppableRef.current && mainRef.current) {
+      return isExtraShowing ? `${mainHeight + poppableHeight + 10}px` : `${mainHeight + 5}px`;
+    }
+    return 'auto';
+  }
+
   return (
     <div
-      className="flex flex-col gap-2 relative transition-all"
+      className="flex flex-col gap-2 relative transition-all overflow-hidden"
       style={{
-        marginBottom: isExtraShowing ? `${poppableHeight + 10}px` : '0'
+        height: containerHeight()
       }}
     >
       {/* Main */}
       <div
         className="p-4 flex gap-4 relative rounded-2xl overflow-hidden border border-black bg-white z-10"
         onClick={onItemClick}
+        ref={mainRef}
       >
         {/* Info */}
         <div className="flex gap-1 justify-between w-full">
@@ -251,18 +267,17 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
 
       {/* Poppable info */}
       <div
-        className={`rounded-2xl overflow-hidden border border-black transition-all absolute bottom-[-5px] w-[90%] left-1/2 -translate-x-1/2`}
+        className={`rounded-2xl overflow-hidden border border-black transition-all absolute w-[90%] left-1/2 -translate-x-1/2 bottom-0`}
         ref={poppableRef}
         style={{
-          bottom: isExtraShowing ? `-${poppableHeight + 10}px` : '-5px',
-          backgroundColor: isExtraShowing ? 'white' : 'black'
+          backgroundColor: isExtraShowing ? 'white' : 'black',
         }}
       >
         <div className="flex flex-col gap-2 p-4 text-[0.75rem]">
           <div className="font-mono"><span className="uppercase font-bold">Description:</span> {updateItemDescription(itemDescription)}</div>
           {
-            itemLink && <div>
-              Click <a className="underline text-[#F36D56] underline-offset-2" href={itemLink} target="_blank">HERE</a> to view the item.
+            itemLink && typeof stringToValidURL(itemLink) === 'string' && <div>
+              Click <a className="underline text-[#F36D56] underline-offset-2" href={stringToValidURL(itemLink) as string} target="_blank">HERE</a> to view the item.
             </div>
           }
         </div>

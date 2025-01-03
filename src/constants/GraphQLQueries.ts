@@ -56,17 +56,19 @@ export const GET_WISHLIST_AND_BUDGET = gql`
 `;
 
 export const ADD_WISHLIST = gql`
-  mutation CreateWishlist($itemName: String!, $targetAmount: Float!, $priority: Int!, $itemLink: String) {
+  mutation CreateWishlist($itemName: String!, $targetAmount: Float!, $priority: Int!, $itemLink: String, $itemDescription: String) {
     ${MUTATION_NAME_CREATE_WISHLIST}(
       itemName: $itemName,
       targetAmount: $targetAmount,
       priority: $priority,
-      itemLink: $itemLink
+      itemLink: $itemLink,
+      itemDescription: $itemDescription
     ) {
       id,
       itemName,
       priority,
       itemLink,
+      itemDescription,
       currentAmount,
       targetAmount 
     }
