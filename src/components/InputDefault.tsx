@@ -11,8 +11,9 @@ import { useId } from 'react';
 // Utils
 import getInputErrorClasses from '@/utils/getInputErrorClasses';
 
-interface InputTextProps {
+interface InputDefaultProps {
   label: string;
+  inputType?: 'text' | 'url',
   inputValue: string;
   isErrorShowing?: boolean;
   errorMessage?: string;
@@ -22,7 +23,7 @@ interface InputTextProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function InputText({ label, inputValue, isErrorShowing = false, errorMessage = '', isRequired = false, extraClasses = '', onBlur, onChange }: InputTextProps) {
+export default function InputDefault({ label, inputType = 'text', inputValue, isErrorShowing = false, errorMessage = '', isRequired = false, extraClasses = '', onBlur, onChange }: InputDefaultProps) {
   // Id
   const inputId = useId();
 
@@ -31,7 +32,7 @@ export default function InputText({ label, inputValue, isErrorShowing = false, e
       <LabelDefault id={inputId} name={label} isRequired={isRequired} />
 
       <input
-        type="text"
+        type={inputType}
         id={inputId}
         name={label.toLowerCase()}
         value={inputValue}

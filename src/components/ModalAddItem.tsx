@@ -9,7 +9,7 @@ import { FetchResult, useMutation } from '@apollo/client';
 // Componets
 import ButtonDefault from '@/components/ButtonDefault';
 import InputNumber from '@/components/InputNumber';
-import InputText from '@/components/InputText';
+import InputDefault from '@/components/InputDefault';
 import LabelDefault from '@/components/LabelDefault';
 import ModalDefault from '@/components/ModalDefault';
 import SelectPriority from '@/components/SelectPriority';
@@ -33,106 +33,8 @@ import { useId } from 'react';
 import type { WishlistType } from '@/types/WishlistType';
 import type { OptionType } from '@/types/OptionType';
 
-interface InputDefaultProps {
-  label: string;
-  type?: 'text' | 'url' | 'number',
-  isRequired?: boolean;
-  extraClasses?: string;
-}
-
-function InputDefault({ type = 'text', label, isRequired = false, extraClasses = '' }: InputDefaultProps) {
-  // States
-  const [value, setValue] = useState('');
-  const [isErrorShowing, setIsErrorShowing] = useState(false);
-
-  // Id
-  const inputId = useId();
-
-  // Extra input properties
-  let extraInputProperties: { [key: string]: any } = {
-    onBlur: onInputDefaultBlur,
-    onChange: onInputDefaultChange
-  };
-
-  switch (type) {
-    case 'number':
-      extraInputProperties = {
-        step: 0.01,
-        onKeyDown: onInputNumberKeyDown,
-        onChange: onInputNumberChange,
-        onBlur: onInputNumberBlur
-      }
-      break;
-    default:
-      break;
-  }
-
-  // Methods
-  function onInputDefaultChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setIsErrorShowing(false);
-    setValue(event.target.value);
-  }
-
-  function onInputDefaultBlur() {
-    // When an input is required, determine if the value is empty
-    // If so, adjust input UI to show error
-    if (isRequired && value.length === 0) {
-      setIsErrorShowing(true);
-    }
-  }
-
-  function onInputNumberBlur() {
-    // When an input is required, determine if the value is empty OR if the value is less than 0
-    // If so, adjust input UI to show error
-    if (isRequired && (value.length === 0 || parseFloat(value) <= 0)) {
-      setIsErrorShowing(true);
-    }
-  }
-
-  function onInputNumberChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const inputValue = event.target.value;
-
-    // Match numbers with up to two decimal places
-    if (/^\d*\.?\d{0,2}$/.test(inputValue)) {
-      setIsErrorShowing(false);
-      setValue(inputValue);
-    }
-  };
-
-  // Prevent certain values from popping on in 'number' type input element
-  function onInputNumberKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key === 'e' || event.key === 'E' || event.key === '+' || event.key === '-') {
-      event.preventDefault();
-    }
-  }
-
-  // Classes for input that would show an error
-  function getInputErrorClasses() {
-    return isErrorShowing
-      ? 'border-red-500 u-shake'
-      : 'border-slate-300';
-  }
-
-  return (
-    <div className={`relative ${extraClasses}`}>
-      <LabelDefault id={inputId} name={label} isRequired={isRequired} />
-
-      <input
-        type={type}
-        id={inputId}
-        name={label.toLowerCase()}
-        value={value}
-        className={`block border rounded-md text-sm px-3 py-2 focus:outline-none focus:border-black transition-colors w-full ${getInputErrorClasses()}`}
-        {...extraInputProperties}
-      />
-
-      {
-        isErrorShowing &&
-        <div className="absolute text-xs mt-1 right-0 text-red-500"><ExclamationTriangleIcon className="size-3 inline-block mr-1" />This is an error</div>
-      }
-    </div>
-  )
-}
+// Utils
+import isAValidURL from '@/utils/isAValidURL';
 
 interface TextAreaDefaultProps {
   label: string;
@@ -166,6 +68,8 @@ export default function ModalAddItem () {
   const [targetPrice, setTargetPrice] = useState('');
   const [isErrorShowingTargetPrice, setIsErrorShowingTargetPrice] = useState(false);
   const [itemPriority, setItemPriority] = useState(DEFAULT_PRIORITY);
+  const [itemLink, setItemLink] = useState('');
+  const [isErrorShowingItemLink, setIsErrorShowingItemLink] = useState(false);
 
   // Dispatch
   const dispatch = useDispatch<AppDispatch>();
@@ -217,6 +121,11 @@ export default function ModalAddItem () {
       isAnyErrorShowing = true;
     }
 
+    if (itemLink.length !== 0 && !isAValidURL(itemLink)) {
+      setIsErrorShowingItemLink(true);
+      isAnyErrorShowing = true;
+    }
+
     if (isAnyErrorShowing) {
       return;
     }
@@ -224,7 +133,8 @@ export default function ModalAddItem () {
     createWishlistMutation({ variables: {
       itemName,
       targetAmount: parseFloat(targetPrice),
-      priority: itemPriority
+      priority: itemPriority,
+      itemLink
     } })
       .then((result: FetchResult<createWishlistMutationType>) => {
         const { data } = result;
@@ -247,15 +157,29 @@ export default function ModalAddItem () {
   }
 
   // When updating itemName input
-  function onInputDefaultChange(event: React.ChangeEvent<HTMLInputElement>) {
+  function onInputItemNameChange(event: React.ChangeEvent<HTMLInputElement>) {
     setIsErrorShowingItemName(false);
     setItemName(event.target.value);
   }
 
   // When unfocusing itemName input
-  function onInputDefaultBlur() {
+  function onInputItemNameBlur() {
     // If itemName is empty, mark that the input should show the error
     if (itemName.length === 0) {
+      setIsErrorShowingItemName(true);
+    }
+  }
+
+  // When updating itemLink input
+  function onInputItemLinkChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setIsErrorShowingItemLink(false);
+    setItemLink(event.target.value);
+  }
+
+  // When unfocusing itemLink input
+  function onInputItemLinkBlur() {
+    // If itemLink is an invalid URL, mark that the input should show the error
+    if (isAValidURL(itemName)) {
       setIsErrorShowingItemName(true);
     }
   }
@@ -288,7 +212,7 @@ export default function ModalAddItem () {
 
   // Disable submit button if there are any input errors
   function isSubmitButtonDisabled(): boolean {
-    return isErrorShowingItemName || isErrorShowingTargetPrice;
+    return isErrorShowingItemName || isErrorShowingTargetPrice || isErrorShowingItemLink;
   }
 
   // When updating priority
@@ -315,14 +239,14 @@ export default function ModalAddItem () {
           <XMarkIcon />
         </button>
 
-        <InputText
+        <InputDefault
           label="Name"
           isRequired={true}
           extraClasses="my-4"
           inputValue={itemName}
           errorMessage="This cannot be empty"
-          onChange={onInputDefaultChange}
-          onBlur={onInputDefaultBlur}
+          onChange={onInputItemNameChange}
+          onBlur={onInputItemNameBlur}
           isErrorShowing={isErrorShowingItemName}
         />
 
@@ -338,7 +262,16 @@ export default function ModalAddItem () {
           isErrorShowing={isErrorShowingTargetPrice}
         />
 
-        {/* <InputDefault type="url" label="Item link" extraClasses="my-4" /> */}
+        <InputDefault
+          label="Item link"
+          extraClasses="my-4"
+          inputValue={itemLink}
+          errorMessage="Enter a valid url"
+          onChange={onInputItemLinkChange}
+          onBlur={onInputItemLinkBlur}
+          isErrorShowing={isErrorShowingItemLink}
+        />
+
         <SelectPriority
           label="Priority"
           name="priority"
