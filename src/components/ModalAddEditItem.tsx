@@ -16,38 +16,63 @@ import TextAreaDefault from '@/components/TextAreaDefault';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
 // Constans
-import { ADD_WISHLIST, MUTATION_NAME_CREATE_WISHLIST } from '@/constants/GraphQLQueries';
+import {
+  ADD_WISHLIST,
+  MUTATION_NAME_CREATE_WISHLIST,
+  UPDATE_WISHLIST,
+  MUTATION_NAME_UPDATE_WISHLIST
+} from '@/constants/GraphQLQueries';
 
 // React
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 // Redux
+import { RootState } from '@/redux/store';
 import { useDispatch } from 'react-redux';
 import { closeAddItemModal } from '@/redux/features/modalSlice';
 import { addWishlist } from '@/redux/features/wishlistSlice';
+import { updateWishlist } from '@/redux/features/wishlistSlice';
 
 // Types
 import type { AppDispatch } from '@/redux/store';
 import type { WishlistType } from '@/types/WishlistType';
+import type { updateWishlistMutationType, createWishlistMutationType } from '@/types/WishlistMutationType';
 import type { OptionType } from '@/types/OptionType';
 
 // Utils
 import isAValidURL from '@/utils/isAValidURL';
 import stringToValidURL from '@/utils/stringToValidURL';
 
-export default function ModalAddItem () {
+/**
+ * Prop typing
+ */
+interface ModalAddEditItemProps {
+  wishlist?: WishlistType
+}
+
+export default function ModalAddEditItem () {
   // consts
+  const {
+    id: targetId,
+    itemName: targetItemName,
+    itemLink: targetItemLink,
+    itemDescription: targetItemDescription,
+    priority: targetPriority,
+    targetAmount,
+  } = useSelector((state: RootState) => state.modalReducer.targetWishlist);
+  const isOnEditMode = !!targetId;
   const DEFAULT_PRIORITY = 3;
 
   // State
-  const [itemName, setItemName] = useState('');
+  const [itemName, setItemName] = useState(targetItemName || '');
   const [isErrorShowingItemName, setIsErrorShowingItemName] = useState(false);
-  const [targetPrice, setTargetPrice] = useState('');
+  const [targetPrice, setTargetPrice] = useState(targetAmount?.toString() || '');
   const [isErrorShowingTargetPrice, setIsErrorShowingTargetPrice] = useState(false);
-  const [itemPriority, setItemPriority] = useState(DEFAULT_PRIORITY);
-  const [itemLink, setItemLink] = useState('');
+  const [itemPriority, setItemPriority] = useState(targetPriority || DEFAULT_PRIORITY);
+  const [itemLink, setItemLink] = useState(targetItemLink || '');
   const [isErrorShowingItemLink, setIsErrorShowingItemLink] = useState(false);
-  const [itemDescription, setItemDescription] = useState('');
+  const [itemDescription, setItemDescription] = useState(targetItemDescription || '');
 
   // Dispatch
   const dispatch = useDispatch<AppDispatch>();
@@ -58,8 +83,8 @@ export default function ModalAddItem () {
   }
 
   // Mutation
-  type createWishlistMutationType = { [MUTATION_NAME_CREATE_WISHLIST]: WishlistType };
   const [createWishlistMutation] = useMutation<createWishlistMutationType>(ADD_WISHLIST);
+  const [updateWishlistMutation] = useMutation<updateWishlistMutationType>(UPDATE_WISHLIST);
 
   const priorityOptions: OptionType[] = [
     {
@@ -84,7 +109,7 @@ export default function ModalAddItem () {
     },
   ]
 
-  function onFormSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function onFormSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     let isAnyErrorShowing = false;
@@ -108,23 +133,48 @@ export default function ModalAddItem () {
       return;
     }
 
-    createWishlistMutation({ variables: {
-      itemName,
-      targetAmount: parseFloat(targetPrice),
-      priority: itemPriority,
-      itemLink: stringToValidURL(itemLink) || '',
-      itemDescription
-    } })
-      .then((result: FetchResult<createWishlistMutationType>) => {
-        const { data } = result;
+    // Perfom the proper mutation based on if we are in edit mode or not
+    const mutationAction = () => {
+      const defaultVars = {
+        itemName,
+        itemLink: stringToValidURL(itemLink) || '',
+        itemDescription,
+        priority: itemPriority,
+        targetAmount: parseFloat(targetPrice),
+      }
 
-        if (data) {
-          dispatch(addWishlist({
-            ...data[MUTATION_NAME_CREATE_WISHLIST],
-            currentAmount: 0
-          }));
-        }
-      })
+      if (isOnEditMode) {
+        return updateWishlistMutation({
+          variables: {
+            id: targetId,
+            isComplete: false,
+            ...defaultVars
+          }
+        })
+        .then((result: FetchResult<updateWishlistMutationType>) => {
+          const { data } = result;
+          if (data) {
+            dispatch(updateWishlist(data[MUTATION_NAME_UPDATE_WISHLIST]));
+          }
+        })
+      } else {
+        return createWishlistMutation({ variables: {
+          ...defaultVars
+        } })
+          .then((result: FetchResult<createWishlistMutationType>) => {
+            const { data } = result;
+  
+            if (data) {
+              dispatch(addWishlist({
+                ...data[MUTATION_NAME_CREATE_WISHLIST],
+                currentAmount: 0
+              }));
+            }
+          });
+      }
+    }
+
+    mutationAction()
       .catch((err: any) => {
         // @TODO: Need a better err response in the backend
         console.log('error', err);
@@ -206,6 +256,20 @@ export default function ModalAddItem () {
     setItemDescription(event.target.value.trim());
   }
 
+  // Update modal title based on if you are in edit mode or not
+  function getModalTitle(): string {
+    return isOnEditMode
+      ? 'Edit a wishlist 💸'
+      : 'Add an item 💸'
+  }
+
+  // Update submit button text based on if you are in edit mode or not
+  function getButtonText(): string {
+    return isOnEditMode
+      ? 'Edit Item'
+      : 'Add Item'
+  }
+
   return (
     <ModalDefault
       onCloseClick={() => onCloseClick()}
@@ -215,7 +279,7 @@ export default function ModalAddItem () {
         className="p-6 relative"
         onSubmit={onFormSubmit}
       >
-        <div className="text-2xl font-bold">Add an item 💸</div>
+        <div className="text-2xl font-bold">{getModalTitle()}</div>
 
         <button
           className="absolute top-6 right-6 w-4 aspect-square border border-black bg-white rounded-md p-2 box-content"
@@ -272,7 +336,7 @@ export default function ModalAddItem () {
         />
 
         <div className="fixed w-full left-0 bottom-0 p-4 border-t border-black">
-          <ButtonDefault buttonText="Add Item" onClick={() => {}} extraClasses="w-full" isDisabled={isSubmitButtonDisabled()} />
+          <ButtonDefault buttonText={getButtonText()} onClick={() => {}} extraClasses="w-full" isDisabled={isSubmitButtonDisabled()} />
         </div>
       </form>
     </ModalDefault>

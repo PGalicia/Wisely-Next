@@ -34,8 +34,7 @@ export default function ModalDeleteConfirmation () {
   const [removeWishlistMutation] = useMutation<removeWishlistMutationType>(REMOVE_WISHLIST);
 
   // Redux
-  const targetWishlistId = useSelector((state: RootState) => state.modalReducer.targetWishlistId);
-  const targetWishlistName = useSelector((state: RootState) => state.modalReducer.targetWishlistName);
+  const targetWishlist = useSelector((state: RootState) => state.modalReducer.targetWishlist);
 
   // Methods
   function onCloseClick () {
@@ -43,7 +42,7 @@ export default function ModalDeleteConfirmation () {
   }
 
   function onConfirmClick() {
-    removeWishlistMutation({ variables: { id: targetWishlistId } })
+    removeWishlistMutation({ variables: { id: targetWishlist.id } })
       .then((result: FetchResult<removeWishlistMutationType>) => {
         const { data } = result;
 
@@ -62,7 +61,7 @@ export default function ModalDeleteConfirmation () {
     >
       <div className="flex flex-col h-full justify-between max-w-[500px] p-4">
         <div className="p-8 text-center text-2xl grow flex flex-col justify-center">
-          <div>Are you sure you want to delete <span className="font-bold">{targetWishlistName}</span>?</div>
+          <div>Are you sure you want to delete <span className="font-bold">{targetWishlist.itemName}</span>?</div>
         </div>
 
         <div className="p-4 w-full flex flex-col gap-2">

@@ -17,9 +17,11 @@ import { useRef, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { openDeleteConfirmationModal } from '@/redux/features/modalSlice';
 import { removeWishlist } from '@/redux/features/wishlistSlice';
+import { openEditItemModal } from '@/redux/features/modalSlice';
 
 // Types
 import type { WishlistType } from '@/types/WishlistType';
+import type { updateWishlistMutationType } from '@/types/WishlistMutationType';
 import type { AppDispatch } from '@/redux/store';
 
 // Utils
@@ -158,7 +160,6 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
   const mainRef = useRef<HTMLDivElement>(null);
 
   // Mutation
-  type updateWishlistMutationType = { [MUTATION_NAME_UPDATE_WISHLIST]: WishlistType; };
   const [updateWishlist] = useMutation<updateWishlistMutationType>(UPDATE_WISHLIST);
 
   // Use effect
@@ -216,10 +217,10 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
   }
   
   function onDeleteClick(): void {
-    dispatch(openDeleteConfirmationModal({
-      id,
-      itemName,
-    }))
+    dispatch(openDeleteConfirmationModal(wishlist));
+  }
+  function onEditClick(): void {
+    dispatch(openEditItemModal(wishlist));
   }
 
   // Calculate the height of the container - This is needed to allow the popping out animation when item is clicked
@@ -282,8 +283,12 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
           }
         </div>
 
-        <div className="text-right gap-1 text-xs border-t px-4 py-2 border-black/20 font-mono">
+        <div className="flex justify-end gap-2 text-xs border-t px-4 py-2 border-black/20 font-mono">
           {/* Delete button */}
+          <button
+            className="uppercase underline text-link underline-offset-2"
+            onClick={onEditClick}
+          >Edit</button>
           <button
             className="uppercase underline text-link underline-offset-2"
             onClick={onDeleteClick}

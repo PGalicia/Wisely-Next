@@ -9,7 +9,7 @@ import { useQuery } from '@apollo/client';
 import BalanceDefault from '@/components/BalanceDefault';
 import ButtonAdd from '@/components/ButtonAdd';
 import ModalDeleteConfirmation from '@/components/ModalDeleteConfirmation';
-import ModalAddItem from '@/components/ModalAddItem';
+import ModalAddEditItem from '@/components/ModalAddEditItem';
 import WishlistItem from '@/components/WishlistItem';
 
 // Constants
@@ -77,7 +77,7 @@ export default function Home() {
 
       {/* Modals */}
       {isDeleteConfirmationModalActive && <ModalDeleteConfirmation />}
-      {isAddItemModalActive && <ModalAddItem />}
+      {isAddItemModalActive && <ModalAddEditItem />}
     </main>
   );
 }
