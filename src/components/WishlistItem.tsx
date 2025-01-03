@@ -277,7 +277,7 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
           <div className="font-mono"><span className="uppercase font-bold">Description:</span> {updateItemDescription(itemDescription)}</div>
           {
             itemLink && typeof stringToValidURL(itemLink) === 'string' && <div>
-              Click <a className="underline text-[#F36D56] underline-offset-2" href={stringToValidURL(itemLink) as string} target="_blank">HERE</a> to view the item.
+              Click <a className="underline text-link underline-offset-2" href={stringToValidURL(itemLink) as string} target="_blank">HERE</a> to view the item.
             </div>
           }
         </div>
@@ -285,7 +285,7 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
         <div className="text-right gap-1 text-xs border-t px-4 py-2 border-black/20 font-mono">
           {/* Delete button */}
           <button
-            className="uppercase underline text-[#F36D56] underline-offset-2"
+            className="uppercase underline text-link underline-offset-2"
             onClick={onDeleteClick}
           >Delete</button>
         </div>

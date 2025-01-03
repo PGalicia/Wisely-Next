@@ -15,7 +15,7 @@ interface ButtonAddProps {
 export default function ButtonAdd({ buttonText, onClick }: ButtonAddProps) {
   return (
     <button
-      className="fixed bottom-12 right-8 bg-[#B19CD9] font-bold p-4 rounded-2xl flex gap-2 items-center z-50"
+      className="fixed bottom-12 right-8 bg-purpleAccent font-bold p-4 rounded-2xl flex gap-2 items-center z-50"
       onClick={onClick}
     >
       <span>{buttonText}</span>
