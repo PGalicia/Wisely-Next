@@ -1,6 +1,12 @@
 /**
  * Imports
  */
+// Auth0
+import { UserProvider } from "@auth0/nextjs-auth0/client";
+
+// Components
+import HeaderDefault from "@/components/HeaderDefault";
+
 // Next
 import type { Metadata } from "next";
 import localFont from "next/font/local";
@@ -39,13 +45,16 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-offWhite max-w-3xl my-0 mx-auto`}
-      >
-        <h1 className="text-3xl font-black p-4">Wisely 💰</h1>
-        <ReduxProvider>
-          <ApolloClientWrapper>
-            {children}
-          </ApolloClientWrapper> 
-        </ReduxProvider>
+        >
+        <UserProvider>
+          <HeaderDefault />
+
+          <ReduxProvider>
+            <ApolloClientWrapper>
+              {children}
+            </ApolloClientWrapper> 
+          </ReduxProvider>
+        </UserProvider>
       </body>
     </html>
   );
