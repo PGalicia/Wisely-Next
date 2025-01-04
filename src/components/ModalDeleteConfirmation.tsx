@@ -34,6 +34,7 @@ export default function ModalDeleteConfirmation () {
 
   // Redux
   const targetWishlist = useSelector((state: RootState) => state.modalReducer.targetWishlist);
+  const isOnDemo = useSelector((state: RootState) => state.wishlistReducer.isOnDemo);
 
   // Methods
   function onCloseClick () {
@@ -41,6 +42,12 @@ export default function ModalDeleteConfirmation () {
   }
 
   function onConfirmClick() {
+    if (isOnDemo) {
+      dispatch(removeWishlist(targetWishlist.id));
+      onCloseClick();
+      return;
+    }
+
     removeWishlistMutation({ variables: { id: targetWishlist.id } })
       .then((result: FetchResult<removeWishlistMutationType>) => {
         const { data } = result;

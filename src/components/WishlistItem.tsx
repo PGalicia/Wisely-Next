@@ -14,7 +14,7 @@ import { UPDATE_WISHLIST, MUTATION_NAME_UPDATE_WISHLIST } from '@/constants/Grap
 import { useRef, useState, useEffect } from 'react';
 
 // Redux
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { openDeleteConfirmationModal } from '@/redux/features/modalSlice';
 import { removeWishlist } from '@/redux/features/wishlistSlice';
 import { openEditItemModal } from '@/redux/features/modalSlice';
@@ -22,7 +22,7 @@ import { openEditItemModal } from '@/redux/features/modalSlice';
 // Types
 import type { WishlistType } from '@/types/WishlistType';
 import type { updateWishlistMutationType } from '@/types/WishlistMutationType';
-import type { AppDispatch } from '@/redux/store';
+import type { AppDispatch, RootState } from '@/redux/store';
 
 // Utils
 import stringToValidURL from '@/utils/stringToValidURL';
@@ -159,6 +159,9 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
   const poppableRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
 
+  // Redux
+  const isOnDemo = useSelector((state: RootState) => state.wishlistReducer.isOnDemo);
+
   // Mutation
   const [updateWishlist] = useMutation<updateWishlistMutationType>(UPDATE_WISHLIST);
 
@@ -183,6 +186,11 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
   function onCompleteCheckClick(event: React.MouseEvent<HTMLButtonElement>): void {
     event.stopPropagation();
 
+    if (isOnDemo) {
+      dispatch(removeWishlist(id));
+      return;
+    }
+
     updateWishlist({
       variables: {
         id,
@@ -201,7 +209,6 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
       }
     })
     .catch((err) => console.error(err));
-
   }
 
   function modifyPrice(price: number): string {

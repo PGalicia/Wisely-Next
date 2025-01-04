@@ -12,7 +12,8 @@ import type { WishlistType } from "@/types/WishlistType";
  */
 const initialState = {
   wishlists: [] as WishlistType[],
-  budget: -1
+  budget: -1,
+  isOnDemo: false
 }
 
 /**
@@ -23,7 +24,13 @@ const wishlist = createSlice({
   initialState,
   reducers: {
     setWishlist: (state, item: PayloadAction<WishlistType[]>) => {
-      state.wishlists = item.payload
+      state.wishlists = item.payload;
+    },
+    setWishlistAndAdjustCurrentAmount: (state, item: PayloadAction<WishlistType[]>) => {
+      const updatedWishlist = item.payload;
+
+      // Adjust the current amount on each wishlist
+      state.wishlists = adjustCurrentAmountOnWishlists(updatedWishlist, state.budget);
     },
     setBudget: (state, item: PayloadAction<number>) => {
       state.budget = item.payload;
@@ -51,6 +58,9 @@ const wishlist = createSlice({
 
       // Adjust the current amount on each wishlist
       state.wishlists = adjustCurrentAmountOnWishlists(updatedWishlist, state.budget);
+    },
+    setIsOnDemo: (state, item: PayloadAction<boolean>) => {
+      state.isOnDemo = item.payload;
     }
   }
 })
@@ -119,9 +129,11 @@ function insertWishlistIntoTheRightSpot(wishlistArr: WishlistType[], newWishlist
 
 export const {
   setWishlist,
+  setWishlistAndAdjustCurrentAmount,
   setBudget,
   addWishlist,
   updateWishlist,
   removeWishlist,
+  setIsOnDemo,
 } = wishlist.actions
 export default wishlist.reducer

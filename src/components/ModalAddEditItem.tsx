@@ -35,20 +35,12 @@ import { updateWishlist } from '@/redux/features/wishlistSlice';
 
 // Types
 import type { AppDispatch } from '@/redux/store';
-import type { WishlistType } from '@/types/WishlistType';
 import type { updateWishlistMutationType, createWishlistMutationType } from '@/types/WishlistMutationType';
 import type { OptionType } from '@/types/OptionType';
 
 // Utils
 import isAValidURL from '@/utils/isAValidURL';
 import stringToValidURL from '@/utils/stringToValidURL';
-
-/**
- * Prop typing
- */
-interface ModalAddEditItemProps {
-  wishlist?: WishlistType
-}
 
 export default function ModalAddEditItem () {
   // consts
@@ -75,6 +67,9 @@ export default function ModalAddEditItem () {
 
   // Dispatch
   const dispatch = useDispatch<AppDispatch>();
+
+  // Redux
+  const isOnDemo = useSelector((state: RootState) => state.wishlistReducer.isOnDemo);
 
   // Methods
   function onCloseClick () {
@@ -129,6 +124,32 @@ export default function ModalAddEditItem () {
     }
 
     if (isAnyErrorShowing) {
+      return;
+    }
+
+    if (isOnDemo) {
+      const defaultVars = {
+        itemName,
+        itemLink: stringToValidURL(itemLink) || '',
+        itemDescription,
+        priority: itemPriority,
+        targetAmount: parseFloat(targetPrice),
+      }
+
+      if (isOnEditMode) {
+        dispatch(updateWishlist({
+          id: targetId,
+          ...defaultVars
+        }));
+      } else {
+        dispatch(addWishlist({
+          id: Date.now().toString(),
+          ...defaultVars,
+          currentAmount: 0
+        }));
+      }
+
+      onCloseClick();
       return;
     }
 
