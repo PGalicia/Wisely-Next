@@ -17,13 +17,15 @@ export default async function HeaderDefault() {
     if (pathname === '/') {
       link = '/api/auth/logout';
       linkText = 'Logout';
+    } else if (pathname === '/demo') {
+      return <a className="uppercase underline text-link underline-offset-2" href="/login">LOGIN</a>
     }
 
     return <a className="uppercase underline text-link underline-offset-2" href={link}>{linkText}</a>
   }
   
   return (
-    <div className="flex justify-between items-center p-4">
+    <div className={`flex justify-between items-center p-4 ${pathname === '/login' ? 'hidden': ''}`}>
       <h1 className="text-3xl font-black">Wisely 💰</h1>
       {determineLink()}
     </div>
