@@ -8,9 +8,11 @@ import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 // Components
 import MainHome from '@/components/MainHome';
 
-interface HomePageProps {}
+interface HomePageProps {
+  params?: Record<string, string | string[]>;
+}
 
-async function HomePage({}: HomePageProps) {
+async function HomePage({ params }: HomePageProps) {
   return <MainHome />
 }
 
