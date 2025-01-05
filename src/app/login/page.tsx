@@ -1,10 +1,16 @@
+/**
+ * Imports
+ */
+// Components
+import LinkDefault from "@/components/LinkDefault";
+
 export default function LoginPage() {
   return (
     <div className="py-20 px-8 max-w-xl my-0 mx-auto">
       <h2 className="font-black text-6xl uppercase mb-8">Welcome to Wisely 👋</h2>
 
       <p className="mb-8">
-        This is a web app that allows me to keep track of any items I wish to buy, think like Elster with extra features. Unless you are me, your account won't work but please feel free to play around in the <a className="uppercase underline text-link underline-offset-2" href="/demo">DEMO</a> page
+        This is a web app that allows me to keep track of any items I wish to buy, think like Elster with extra features. Unless you are me, your account won't work but please feel free to play around in the <LinkDefault linkText="Demo" url="/demo" /> page
       </p>
 
       <a href="/api/auth/login" className="flex p-4 border border-black rounded-xl bg-white items-center gap-4 font-black justify-center cursor-pointer">

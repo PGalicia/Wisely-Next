@@ -1,6 +1,9 @@
 /**
  * Imports
  */
+// Components
+import LinkDefault from '@/components/LinkDefault';
+
 // Next
 import { headers } from 'next/headers';
 
@@ -18,10 +21,10 @@ export default async function HeaderDefault() {
       link = '/api/auth/logout';
       linkText = 'Logout';
     } else if (pathname === '/demo') {
-      return <a className="uppercase underline text-link underline-offset-2" href="/login">LOGIN</a>
+      return <LinkDefault linkText="login" url="/login" />
     }
 
-    return <a className="uppercase underline text-link underline-offset-2" href={link}>{linkText}</a>
+    return <LinkDefault linkText={linkText} url={link} />;
   }
   
   return (

@@ -6,6 +6,8 @@ import { FetchResult, useMutation } from '@apollo/client';
 
 // Components
 import { CheckIcon } from '@heroicons/react/16/solid';
+import LinkDefault from '@/components/LinkDefault';
+import LinkButton from '@/components/LinkButton';
 
 // Constants
 import { UPDATE_WISHLIST, MUTATION_NAME_UPDATE_WISHLIST } from '@/constants/GraphQLQueries';
@@ -285,21 +287,15 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
           <div className="font-mono"><span className="uppercase font-bold">Description:</span> {updateItemDescription(itemDescription)}</div>
           {
             itemLink && typeof stringToValidURL(itemLink) === 'string' && <div>
-              Click <a className="underline text-link underline-offset-2" href={stringToValidURL(itemLink) as string} target="_blank">HERE</a> to view the item.
+              Click <LinkDefault linkText="here" url={stringToValidURL(itemLink) as string} isExternal={true} /> to view the item.
             </div>
           }
         </div>
 
         <div className="flex justify-end gap-2 text-xs border-t px-4 py-2 border-black/20 font-mono">
-          {/* Delete button */}
-          <button
-            className="uppercase underline text-link underline-offset-2"
-            onClick={onEditClick}
-          >Edit</button>
-          <button
-            className="uppercase underline text-link underline-offset-2"
-            onClick={onDeleteClick}
-          >Delete</button>
+          {/* Edit and Delete button */}
+          <LinkButton text="Edit" onClick={onEditClick} />
+          <LinkButton text="Delete" onClick={onDeleteClick} />
         </div>
       </div>
     </div>
