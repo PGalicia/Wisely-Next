@@ -195,7 +195,7 @@ export default function ModalAddEditItem () {
     }
 
     mutationAction()
-      .catch((err: any) => {
+      .catch((err: unknown) => {
         // @TODO: Need a better err response in the backend
         console.log('error', err);
       })

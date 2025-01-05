@@ -11,6 +11,7 @@ export default function stringToValidURL(urlString: string): string | null {
     const url = new URL(urlToValidate);
     return url.href; // Return the valid URL as a string
   } catch (error) {
+    console.error(error);
     return null; // If invalid, return null or an appropriate error message
   }
 }

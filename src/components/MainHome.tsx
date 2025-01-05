@@ -47,7 +47,7 @@ export default function MainHome() {
       dispatch(setWishlist(data[QUERY_NAME_GET_ALL_WISHLIST]));
       dispatch(setBudget(data[QUERY_NAME_GET_BUDGET]));
     }
-  }, [data, loading, error]);
+  }, [data, loading, error, dispatch]);
 
   // Show proper loading/error text if needed
   // @TODO: I should look into making this better

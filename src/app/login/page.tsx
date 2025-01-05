@@ -10,7 +10,7 @@ export default function LoginPage() {
       <h2 className="font-black text-6xl uppercase mb-8">Welcome to Wisely 👋</h2>
 
       <p className="mb-8">
-        This is a web app that allows me to keep track of any items I wish to buy, think like Elster with extra features. Unless you are me, your account won't work but please feel free to play around in the <LinkDefault linkText="Demo" url="/demo" /> page
+        This is a web app that allows me to keep track of any items I wish to buy, think like Elster with extra features. Unless you are me, your account won&apos;t work but please feel free to play around in the <LinkDefault linkText="Demo" url="/demo" /> page
       </p>
 
       <a href="/api/auth/login" className="flex p-4 border border-black rounded-xl bg-white items-center gap-4 font-black justify-center md:cursor-pointer md:transition-all md:hover:border-link md:hover:border-2">
