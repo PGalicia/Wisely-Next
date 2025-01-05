@@ -296,7 +296,7 @@ export default function ModalAddEditItem () {
       isFull={true}
     >
       <form
-        className="p-6 relative"
+        className="p-6 relative max-w-3xl mx-auto my-0"
         onSubmit={onFormSubmit}
       >
         <div className="text-2xl font-bold">{getModalTitle()}</div>
@@ -355,7 +355,7 @@ export default function ModalAddEditItem () {
           onChange={onTextAreaItemDescriptionChange}
         />
 
-        <div className="fixed w-full left-0 bottom-0 p-4 border-t border-black">
+        <div className="fixed md:relative w-full left-0 bottom-0 p-4 md:p-0 border-t md:border-t-0 border-black">
           <ButtonDefault buttonText={getButtonText()} onClick={() => {}} extraClasses="w-full" isDisabled={isSubmitButtonDisabled()} />
         </div>
       </form>

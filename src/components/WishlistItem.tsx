@@ -179,6 +179,7 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
 
   // Constants
   const { id, itemName, itemLink, itemDescription, priority, targetAmount, currentAmount = 0 } = wishlist;
+  const grabPercentage = Math.ceil((currentAmount / targetAmount) * 100);
 
   // Methods
   function onItemClick(): void {
@@ -220,10 +221,6 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
   function updateItemDescription(description = ''): string {
     return description || 'Not available';
   }
-
-  function grabPercentage(current: number = 0, target: number): number {
-    return Math.ceil((current / target) * 100);
-  }
   
   function onDeleteClick(): void {
     dispatch(openDeleteConfirmationModal(wishlist));
@@ -249,7 +246,7 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
     >
       {/* Main */}
       <div
-        className="p-4 flex gap-4 relative rounded-2xl overflow-hidden border border-black bg-white z-10"
+        className="p-4 flex gap-4 relative rounded-2xl overflow-hidden border border-black bg-white z-10 md:cursor-pointer md:transition-all md:hover:border-2 md:hover:border-link"
         onClick={onItemClick}
         ref={mainRef}
       >
@@ -262,15 +259,15 @@ export default function WishlistItem({ wishlist }: WishlistItemProp) {
           </div>
 
           <div className="relative self-center">
-            {grabPercentage(currentAmount, targetAmount) >= 100 && 
+            {grabPercentage >= 100 && 
               <button
-                className="absolute bg-[#5CD66A] z-10 rounded-full h-full w-full flex items-center justify-center"
+                className="absolute bg-[#5CD66A] z-10 rounded-full h-full w-full flex items-center justify-center md:transition-all md:hover:scale-[1.1]"
                 onClick={onCompleteCheckClick}
               >
                 <CheckIcon className="size-10" />
               </button>
             }
-            <CircularProgressBar percentage={grabPercentage(currentAmount, targetAmount)} />
+            <CircularProgressBar percentage={grabPercentage} />
           </div>
         </div>
       </div>
