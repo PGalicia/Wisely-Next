@@ -3,7 +3,7 @@
  */
 
 // Auth0
-import { withPageAuthRequired } from '@auth0/nextjs-auth0';
+// import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 
 // Components
 import MainHome from '@/components/MainHome';
@@ -17,10 +17,10 @@ import MainHome from '@/components/MainHome';
  * the nextjs-auth0 library
  */
 
-// @ts-ignore: Check above for reasoning
 async function HomePage() {
   return <MainHome />;
 }
 
 // @ts-ignore: Check above for reasoning
-export default withPageAuthRequired(HomePage);
+// export default withPageAuthRequired(HomePage);
+export default HomePage;
