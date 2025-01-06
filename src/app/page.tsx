@@ -3,16 +3,15 @@
  */
 
 // Auth0
-import { withPageAuthRequired, AppRouterPageRouteOpts } from '@auth0/nextjs-auth0';
+import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 
 // Components
 import MainHome from '@/components/MainHome';
 
-// Types
-import type React from 'react';
-
-async function HomePage({}: AppRouterPageRouteOpts) {
+// @ts-ignore
+async function HomePage() {
   return <MainHome />;
 }
 
+// @ts-ignore
 export default withPageAuthRequired(HomePage);
