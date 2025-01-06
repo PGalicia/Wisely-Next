@@ -2,23 +2,18 @@
  * Imports
  */
 
-// Auth0
-import { withPageAuthRequired, AppRouterPageRoute } from '@auth0/nextjs-auth0';
-
 // Components
 import MainHome from '@/components/MainHome';
 
 /**
- * Reasoning for ts-ignore below:
+ * Why is did I create MainHome component instead of putting the logic instead that component here?
  * 
- * There is typing conflict with PageProps and arguments for withPageAuthRequired.
- * That comment is needed to ignore those error because it works fine with the typing error.
- * It's possible since NextJs with App router is still new, this error hasn't been fixed with
- * the nextjs-auth0 library
+ * I originally want to use "withPageAuthRequired" to prevent user from accessing this page if they are not authenticated.
+ * Although it works fine in dev, it seems that there are typing issue during build times. From what I've read people
+ * are running into the same issue and there needs to be a fix in the nextjs-auth0 library for this to properly work with nextJs app router.
+ * For the meantime, I updated my middleware to copy the same functionality of the "withPageAuthRequired" method.
  */
 
-async function HomePage() {
+export default function HomePage() {
   return <MainHome />;
 }
-
-export default withPageAuthRequired(HomePage as unknown as AppRouterPageRoute);
