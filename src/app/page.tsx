@@ -18,7 +18,7 @@ import MainHome from '@/components/MainHome';
  */
 
 interface HomePageProps {
-  params?: unknown; // using 'unknown' instead of 'any'
+  params?: undefined; // using 'unknown' instead of 'any'
 }
 
 
