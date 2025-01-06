@@ -12,7 +12,7 @@ interface HomePageProps {
   params?: Record<string, string | string[]>;
 }
 
-async function HomePage({ params }: HomePageProps) {
+async function HomePage({}: HomePageProps) {
   return <MainHome />
 }
 
