@@ -12,8 +12,8 @@ interface HomePageProps {
   params?: Record<string, string | string[]>;
 }
 
-async function HomePage({}: HomePageProps) {
+export default function HomePage({}: HomePageProps) {
   return <MainHome />
 }
 
-export default withPageAuthRequired(HomePage);
+export const getServerSideProps = withPageAuthRequired();
