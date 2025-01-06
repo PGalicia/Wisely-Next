@@ -3,17 +3,13 @@
  */
 
 // Auth0
-import { withPageAuthRequired } from '@auth0/nextjs-auth0';
+import { withPageAuthRequired, AppRouterPageRoute } from '@auth0/nextjs-auth0';
 
 // Components
 import MainHome from '@/components/MainHome';
 
-interface HomePageProps {
-  params?: Record<string, string | string[]>;
-}
-
-export default function HomePage({}: HomePageProps) {
+async function HomePage() {
   return <MainHome />
 }
 
-export const getServerSideProps = withPageAuthRequired();
+export default withPageAuthRequired(HomePage);
