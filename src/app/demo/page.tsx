@@ -89,7 +89,7 @@ export default function DemoPage() {
     dispatch(setBudget(100));
     dispatch(setWishlistAndAdjustCurrentAmount(DEFAULT_WISHLIST));
     setIsLoading(false);
-  }, [DEFAULT_WISHLIST, dispatch]);
+  }, [dispatch]);
 
   if (isLoading) {
     return <div className="font-black text-2xl text-center mt-12">Setting up Demo...</div>
