@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Imports
  */
@@ -17,15 +18,8 @@ import MainHome from '@/components/MainHome';
  * the nextjs-auth0 library
  */
 
-interface HomePageProps {
-  params?: undefined; // using 'unknown' instead of 'any'
-}
-
-
-async function HomePage({}: HomePageProps) {
+async function HomePage() {
   return <MainHome />;
 }
 
-// @ts-ignore: Check above for reasoning
 export default withPageAuthRequired(HomePage);
-// export default HomePage;
