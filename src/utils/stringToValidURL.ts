@@ -10,6 +10,7 @@ export default function stringToValidURL(urlString: string): string | null {
     // Try to create a new URL object
     const url = new URL(urlToValidate);
     return url.href; // Return the valid URL as a string
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return null; // If invalid, return null or an appropriate error message
   }
