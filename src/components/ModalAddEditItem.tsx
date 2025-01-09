@@ -208,11 +208,14 @@ export default function ModalAddEditItem () {
   // When updating itemName input
   function onInputItemNameChange(event: React.ChangeEvent<HTMLInputElement>) {
     setIsErrorShowingItemName(false);
-    setItemName(event.target.value.trim());
+    setItemName(event.target.value);
   }
 
   // When unfocusing itemName input
-  function onInputItemNameBlur() {
+  function onInputItemNameBlur(event: React.ChangeEvent<HTMLInputElement>) {
+    // Make sure that there no extra space at the edges of the string
+    setItemName(event.target.value.trim());
+
     // If itemName is empty, mark that the input should show the error
     if (itemName.length === 0) {
       setIsErrorShowingItemName(true);
@@ -273,6 +276,11 @@ export default function ModalAddEditItem () {
 
   // When updating itemDescription input
   function onTextAreaItemDescriptionChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
+    setItemDescription(event.target.value);
+  }
+
+  // When unfocusing itemDescription input
+  function onTextAreaItemDescriptionBlur(event: React.ChangeEvent<HTMLTextAreaElement>) {
     setItemDescription(event.target.value.trim());
   }
 
@@ -353,6 +361,7 @@ export default function ModalAddEditItem () {
           extraClasses="my-4"
           inputValue={itemDescription}
           onChange={onTextAreaItemDescriptionChange}
+          onBlur={onTextAreaItemDescriptionBlur}
         />
 
         <div className="fixed md:relative w-full left-0 bottom-0 p-4 md:p-0 border-t md:border-t-0 border-black">

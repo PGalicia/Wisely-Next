@@ -18,7 +18,7 @@ interface TextAreaDefaultProps {
   errorMessage?: string;
   isRequired?: boolean;
   extraClasses?: string;
-  onBlur?: () => void;
+  onBlur?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   maxLength?: number;
 }
@@ -46,7 +46,7 @@ export default function TextAreaDefault({
         name={label.toLowerCase()}
         value={inputValue}
         className={`block border rounded-md text-sm px-3 py-2 focus:outline-none focus:border-black transition-colors w-full min-h-24 ${getInputErrorClasses(isErrorShowing)}`}
-        onBlur={() => onBlur()}
+        onBlur={onBlur}
         onChange={onChange}
         maxLength={maxLength}
       />

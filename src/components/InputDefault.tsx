@@ -19,7 +19,7 @@ interface InputDefaultProps {
   errorMessage?: string;
   isRequired?: boolean;
   extraClasses?: string;
-  onBlur: () => void;
+  onBlur: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -37,7 +37,7 @@ export default function InputDefault({ label, inputType = 'text', inputValue, is
         name={label.toLowerCase()}
         value={inputValue}
         className={`block border rounded-md text-sm px-3 py-2 focus:outline-none focus:border-black transition-colors w-full ${getInputErrorClasses(isErrorShowing)}`}
-        onBlur={() => onBlur()}
+        onBlur={onBlur}
         onChange={onChange}
       />
 
