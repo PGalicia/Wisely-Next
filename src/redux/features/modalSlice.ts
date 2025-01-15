@@ -13,6 +13,7 @@ import type { WishlistType } from "@/types/WishlistType";
 const initialState = {
   isDeleteConfirmationModalActive: false,
   isAddItemModalActive: false,
+  isEditBudgetModalActive: false,
   targetWishlist: {} as WishlistType
 }
 
@@ -33,7 +34,7 @@ const modal = createSlice({
       state.targetWishlist = {} as WishlistType;
     },
 
-    // Add item
+    // Add/Edit item
     openAddItemModal: (state) => {
       state.isAddItemModalActive = true;
     },
@@ -44,6 +45,14 @@ const modal = createSlice({
     closeAddItemModal: (state) => {
       state.isAddItemModalActive = false;
       state.targetWishlist = {} as WishlistType;
+    },
+
+    // Edit Budget
+    openEditBudgetModal: (state) => {
+      state.isEditBudgetModalActive = true;
+    },
+    closeEditBudgetModal: (state) => {
+      state.isEditBudgetModalActive = false;
     },
   }
 })
@@ -56,6 +65,10 @@ export const {
   // Add item
   openAddItemModal,
   openEditItemModal,
-  closeAddItemModal
+  closeAddItemModal,
+
+  // Edit budget
+  openEditBudgetModal,
+  closeEditBudgetModal,
 } = modal.actions
 export default modal.reducer

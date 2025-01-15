@@ -8,9 +8,8 @@ import { useQuery } from '@apollo/client';
 // Components
 import BalanceDefault from '@/components/BalanceDefault';
 import ButtonAdd from '@/components/ButtonAdd';
-import ModalDeleteConfirmation from '@/components/ModalDeleteConfirmation';
-import ModalAddEditItem from '@/components/ModalAddEditItem';
 import WishlistItem from '@/components/WishlistItem';
+import ModalCollection from '@/components/ModalCollection';
 
 // Constants
 import { GET_WISHLIST_AND_BUDGET, QUERY_NAME_GET_BUDGET, QUERY_NAME_GET_ALL_WISHLIST } from '@/constants/GraphQLQueries';
@@ -35,8 +34,6 @@ export default function MainHome() {
   // Redux
   const wishlists = useSelector((state: RootState) => state.wishlistReducer.wishlists);
   const budget = useSelector((state: RootState) => state.wishlistReducer.budget);
-  const isDeleteConfirmationModalActive = useSelector((state: RootState) => state.modalReducer.isDeleteConfirmationModalActive);
-  const isAddItemModalActive = useSelector((state: RootState) => state.modalReducer.isAddItemModalActive);
 
   // Fetch the wishlists and budget
   const { loading, error, data } = useQuery(GET_WISHLIST_AND_BUDGET);
@@ -77,8 +74,7 @@ export default function MainHome() {
       </div>
 
       {/* Modals */}
-      {isDeleteConfirmationModalActive && <ModalDeleteConfirmation />}
-      {isAddItemModalActive && <ModalAddEditItem />}
+      <ModalCollection />
     </main>
   );
 }

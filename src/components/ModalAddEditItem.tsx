@@ -302,23 +302,17 @@ export default function ModalAddEditItem () {
     <ModalDefault
       onCloseClick={() => onCloseClick()}
       isFull={true}
+      modalTitle={getModalTitle()}
+      extraClassesTitle="max-w-3xl mx-auto my-0 p-6"
     >
       <form
-        className="p-6 relative max-w-3xl mx-auto my-0"
+        className="px-6 relative max-w-3xl mx-auto my-0"
         onSubmit={onFormSubmit}
       >
-        <div className="text-2xl font-bold">{getModalTitle()}</div>
-
-        <button
-          className="absolute top-6 right-6 w-4 aspect-square border border-black bg-white rounded-md p-2 box-content"
-          onClick={() => onCloseClick()}>
-          <XMarkIcon />
-        </button>
-
         <InputDefault
           label="Name"
           isRequired={true}
-          extraClasses="my-4"
+          extraClasses="mb-4"
           inputValue={itemName}
           errorMessage="This cannot be empty"
           onChange={onInputItemNameChange}

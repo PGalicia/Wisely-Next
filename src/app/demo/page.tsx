@@ -5,9 +5,8 @@
 // Components
 import BalanceDefault from '@/components/BalanceDefault';
 import ButtonAdd from '@/components/ButtonAdd';
-import ModalDeleteConfirmation from '@/components/ModalDeleteConfirmation';
-import ModalAddEditItem from '@/components/ModalAddEditItem';
 import WishlistItem from '@/components/WishlistItem';
+import ModalCollection from '@/components/ModalCollection';
 
 // React
 import { useEffect, useId, useState } from 'react';
@@ -80,8 +79,6 @@ export default function DemoPage() {
   // Redux
   const wishlists = useSelector((state: RootState) => state.wishlistReducer.wishlists);
   const budget = useSelector((state: RootState) => state.wishlistReducer.budget);
-  const isDeleteConfirmationModalActive = useSelector((state: RootState) => state.modalReducer.isDeleteConfirmationModalActive);
-  const isAddItemModalActive = useSelector((state: RootState) => state.modalReducer.isAddItemModalActive);
   
   // Update the state to reflect the wishlist and budget
   useEffect(() => {
@@ -116,8 +113,7 @@ export default function DemoPage() {
       </div>
 
       {/* Modals */}
-      {isDeleteConfirmationModalActive && <ModalDeleteConfirmation />}
-      {isAddItemModalActive && <ModalAddEditItem />}
+      <ModalCollection />
     </main>
   );
 }

@@ -34,6 +34,9 @@ const wishlist = createSlice({
     },
     setBudget: (state, item: PayloadAction<number>) => {
       state.budget = item.payload;
+
+      // Adjust the current amount on each wishlist
+      state.wishlists = adjustCurrentAmountOnWishlists(state.wishlists, state.budget);
     },
     addWishlist: (state, item: PayloadAction<WishlistType>) => {
       // Add the new wishlist in the right spot

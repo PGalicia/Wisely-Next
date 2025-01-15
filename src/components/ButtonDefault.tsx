@@ -3,13 +3,14 @@
  */
 interface ButtonDefaultProps {
   buttonText: string;
-  onClick: () => void;
+  onClick?: () => void;
   extraClasses?: string;
   isSecondary?: boolean;
   isDisabled?: boolean;
+  extraProperties?: React.ButtonHTMLAttributes<HTMLButtonElement>;
 }
   
-export default function ButtonDefault ({ buttonText, onClick, isSecondary = false, isDisabled = false, extraClasses = '' }: ButtonDefaultProps) {
+export default function ButtonDefault ({ buttonText, onClick, isSecondary = false, isDisabled = false, extraClasses = '', extraProperties = {} }: ButtonDefaultProps) {
   // Adjust button classes based on if secondary or disabled
   const backgroundColor = isSecondary ? 'bg-white' : 'bg-lightGray';
   const borderClasses = 'border-2 border-lightGray';
@@ -28,6 +29,7 @@ export default function ButtonDefault ({ buttonText, onClick, isSecondary = fals
       className={`${buttonClasses} ${extraClasses}`}
       disabled={isDisabled}
       onClick={onClick}
+      {...extraProperties}
     >
       {buttonText}
     </button>
