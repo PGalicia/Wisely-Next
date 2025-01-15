@@ -4,7 +4,7 @@
 // Components
 import ModalDefault from "@/components/ModalDefault";
 import ButtonDefault from "@/components/ButtonDefault";
-import InputNumberController from "@/components/InputNumberController";
+import InputNumber from "@/components/InputNumber";
 
 // React
 import { useForm } from "react-hook-form";
@@ -24,9 +24,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
  */
 const schema = z.object({
   budget: z.string()
-  .refine(value => /^[0-9]+(\.[0-9]+)?$/.test(value), {
-    message: "Budget must be a valid positive number with optional decimal",
-  }),
+    .refine(value => /^[0-9]+(\.[0-9]{1,2})?$/.test(value), {
+      message: "Must be a valid positive number w/ up to two decimal places.",
+    }),
   percentage: z.string()
     .refine(value => /^[1-9][0-9]*$/.test(value), {
       message: "Budget must be a whole positive number without decimals",
@@ -66,7 +66,6 @@ export default function ModalEditBudget() {
     dispatch(closeEditBudgetModal());
   }
 
-  // function onEditBudgetSubmit(data: EditBudgetFormInputs): SubmitHandler<EditBudgetFormInputs> {
   function onEditBudgetSubmit(data: EditBudgetFormInputs) {
     const { budget, percentage } = data;
     dispatch(setBudget(Number((Number(budget) * (Number(percentage) / 100)).toFixed(2))));
@@ -83,7 +82,7 @@ export default function ModalEditBudget() {
         onSubmit={handleSubmit(onEditBudgetSubmit)} 
         noValidate
       >
-        <InputNumberController
+        <InputNumber
           label="Budget"
           register={register('budget')}
           isRequired={true}
@@ -92,7 +91,7 @@ export default function ModalEditBudget() {
           extraClasses="mb-4"
         />
 
-        <InputNumberController
+        <InputNumber
           label="Percentage"
           register={register('percentage')}
           isRequired={true}

@@ -6,36 +6,39 @@ import LabelDefault from '@/components/LabelDefault';
 import InputError from '@/components/InputError';
 
 // React
-import { useId } from 'react';
+import { useId, useState } from 'react';
+import { UseFormRegisterReturn } from 'react-hook-form';
 
 // Utils
 import getInputErrorClasses from '@/utils/getInputErrorClasses';
 
-interface TextAreaDefaultProps {
+interface TextAreaDefaultProps<T extends string> {
   label: string;
-  inputValue: string;
   isErrorShowing?: boolean;
   errorMessage?: string;
   isRequired?: boolean;
   extraClasses?: string;
-  onBlur?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   maxLength?: number;
+  register?: UseFormRegisterReturn<T>;
 }
 
-export default function TextAreaDefault({
+export default function TextAreaDefault<T extends string>({
   label,
-  inputValue,
   isErrorShowing = false,
   errorMessage = '',
   isRequired = false,
   extraClasses = '',
-  onBlur = () => {},
-  onChange,
-  maxLength = 100
-}: TextAreaDefaultProps) {
+  maxLength = 100,
+  register,
+}: TextAreaDefaultProps<T>) {
   // Id
   const inputId = useId();
+
+  const [inputLength, setInputLength] = useState(0);
+
+  function onTextAreaInputChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
+    setInputLength(event.target.value.length);
+  }
 
   return (
     <div className={`relative ${extraClasses}`}>
@@ -44,11 +47,10 @@ export default function TextAreaDefault({
       <textarea
         id={inputId}
         name={label.toLowerCase()}
-        value={inputValue}
         className={`block border rounded-md text-sm px-3 py-2 focus:outline-none focus:border-black transition-colors w-full min-h-24 ${getInputErrorClasses(isErrorShowing)}`}
-        onBlur={onBlur}
-        onChange={onChange}
         maxLength={maxLength}
+        {...register}
+        onChange={onTextAreaInputChange}
       />
 
       {
@@ -56,7 +58,7 @@ export default function TextAreaDefault({
         <InputError message={errorMessage} />
       }
 
-      <div className="absolute text-xs top-1 right-0 text-black/70">{inputValue.length}/100</div>
+      <div className="absolute text-xs top-1 right-0 text-black/70">{inputLength}/100</div>
     </div>
   )
 }

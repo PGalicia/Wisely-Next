@@ -12,7 +12,6 @@ import InputDefault from '@/components/InputDefault';
 import ModalDefault from '@/components/ModalDefault';
 import SelectPriority from '@/components/SelectPriority';
 import TextAreaDefault from '@/components/TextAreaDefault';
-import { XMarkIcon } from '@heroicons/react/24/outline';
 
 // Constans
 import {
@@ -23,8 +22,8 @@ import {
 } from '@/constants/GraphQLQueries';
 
 // React
-import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useForm } from "react-hook-form";
 
 // Redux
 import { RootState } from '@/redux/store';
@@ -39,8 +38,50 @@ import type { updateWishlistMutationType, createWishlistMutationType } from '@/t
 import type { OptionType } from '@/types/OptionType';
 
 // Utils
-import isAValidURL from '@/utils/isAValidURL';
 import stringToValidURL from '@/utils/stringToValidURL';
+
+// Zod
+import { z } from "zod"; 
+import { zodResolver } from "@hookform/resolvers/zod";
+
+/**
+ * Form type
+ */
+const schema = z.object({
+  name: z.string()
+    .min(5, { message: "Name must be at least 5 characters" })
+    .nonempty({ message: "Name cannot be empty" })
+    .refine(value => !/^\s/.test(value), {  // Check for leading spaces
+      message: "Value cannot start with a space.",
+    })
+    .refine(value => !/\s$/.test(value), {  // Check for trailing spaces
+      message: "Value cannot end with a space.",
+    }),
+  price: z.string()
+    .refine(value => /^[0-9]+(\.[0-9]{1,2})?$/.test(value), {
+      message: "Enter a valid price.",
+    }),
+  url: z.string()
+    .trim()
+    .refine(value => {
+      return value === "" || /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(value) || /^[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}(\/.*)?$/.test(value);
+    }, {
+      message: "Please enter a valid URL.",
+    })
+    .optional(),
+  priority: z.number()
+    .min(1, { message: "Number must be at least 1" })
+    .max(5, { message: "Number must be at most 5" }),
+  description: z.string()
+    .refine(value => !/^\s/.test(value), {  // Check for leading spaces
+      message: "Value cannot start with a space.",
+    })
+    .refine(value => !/\s$/.test(value), {  // Check for trailing spaces
+      message: "Value cannot end with a space.",
+    })
+    .optional(),
+});
+type AddEditWishlistFormInputs = z.infer<typeof schema>;
 
 export default function ModalAddEditItem () {
   // consts
@@ -55,15 +96,23 @@ export default function ModalAddEditItem () {
   const isOnEditMode = !!targetId;
   const DEFAULT_PRIORITY = 3;
 
-  // State
-  const [itemName, setItemName] = useState(targetItemName || '');
-  const [isErrorShowingItemName, setIsErrorShowingItemName] = useState(false);
-  const [targetPrice, setTargetPrice] = useState(targetAmount?.toString() || '');
-  const [isErrorShowingTargetPrice, setIsErrorShowingTargetPrice] = useState(false);
-  const [itemPriority, setItemPriority] = useState(targetPriority || DEFAULT_PRIORITY);
-  const [itemLink, setItemLink] = useState(targetItemLink || '');
-  const [isErrorShowingItemLink, setIsErrorShowingItemLink] = useState(false);
-  const [itemDescription, setItemDescription] = useState(targetItemDescription || '');
+  // Hooks
+  const {
+    register,
+    handleSubmit,
+    setError,
+    setValue,
+    formState: { errors, isSubmitting }
+  } = useForm<AddEditWishlistFormInputs>({
+    defaultValues: {
+      name: targetItemName || '',
+      price: targetAmount?.toString(),
+      url: targetItemLink,
+      priority: targetPriority,
+      description: targetItemDescription
+    },
+    resolver: zodResolver(schema),
+  });
 
   // Dispatch
   const dispatch = useDispatch<AppDispatch>();
@@ -103,29 +152,14 @@ export default function ModalAddEditItem () {
     },
   ]
 
-  async function onFormSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    let isAnyErrorShowing = false;
-
-    if (itemName.length === 0) {
-      setIsErrorShowingItemName(true);
-      isAnyErrorShowing = true;
-    }
-
-    if (targetPrice.length === 0 || parseFloat(targetPrice) <= 0) {
-      setIsErrorShowingTargetPrice(true);
-      isAnyErrorShowing = true;
-    }
-
-    if (itemLink.length !== 0 && !isAValidURL(itemLink)) {
-      setIsErrorShowingItemLink(true);
-      isAnyErrorShowing = true;
-    }
-
-    if (isAnyErrorShowing) {
-      return;
-    }
+  async function onFormSubmit(data: AddEditWishlistFormInputs) {
+    const {
+      name: itemName,
+      price: targetAmount,
+      url: itemLink = '',
+      priority: itemPriority,
+      description: itemDescription
+    } = data;
 
     if (isOnDemo) {
       const defaultVars = {
@@ -133,7 +167,7 @@ export default function ModalAddEditItem () {
         itemLink: stringToValidURL(itemLink) || '',
         itemDescription,
         priority: itemPriority,
-        targetAmount: parseFloat(targetPrice),
+        targetAmount: parseFloat(targetAmount),
       }
 
       if (isOnEditMode) {
@@ -160,7 +194,7 @@ export default function ModalAddEditItem () {
         itemLink: stringToValidURL(itemLink) || '',
         itemDescription,
         priority: itemPriority,
-        targetAmount: parseFloat(targetPrice),
+        targetAmount: parseFloat(targetAmount),
       }
 
       if (isOnEditMode) {
@@ -205,85 +239,6 @@ export default function ModalAddEditItem () {
       });
   }
 
-  // When updating itemName input
-  function onInputItemNameChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setIsErrorShowingItemName(false);
-    setItemName(event.target.value);
-  }
-
-  // When unfocusing itemName input
-  function onInputItemNameBlur(event: React.ChangeEvent<HTMLInputElement>) {
-    // Make sure that there no extra space at the edges of the string
-    setItemName(event.target.value.trim());
-
-    // If itemName is empty, mark that the input should show the error
-    if (itemName.length === 0) {
-      setIsErrorShowingItemName(true);
-    }
-  }
-
-  // When updating itemLink input
-  function onInputItemLinkChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setIsErrorShowingItemLink(false);
-    setItemLink(event.target.value.trim());
-  }
-
-  // When unfocusing itemLink input
-  function onInputItemLinkBlur() {
-    // If itemLink is an invalid URL, mark that the input should show the error
-    if (isAValidURL(itemName)) {
-      setIsErrorShowingItemName(true);
-    }
-  }
-
-  // When unfocusing target price input
-  function onInputNumberBlur() {
-    // If the value is empty OR if the value is less than 0, mark that the input should show the error
-    if (targetPrice.length === 0 || parseFloat(targetPrice) <= 0) {
-      setIsErrorShowingTargetPrice(true);
-    }
-  }
-
-  // When updating target price input
-  function onInputNumberChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const inputValue = event.target.value;
-
-    // Match numbers with up to two decimal places
-    if (/^\d*\.?\d{0,2}$/.test(inputValue)) {
-      setIsErrorShowingTargetPrice(false);
-      setTargetPrice(inputValue);
-    }
-  };
-
-  // Prevent certain values from popping on in 'number' type input element
-  function onInputNumberKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key === 'e' || event.key === 'E' || event.key === '+' || event.key === '-') {
-      event.preventDefault();
-    }
-  }
-
-  // Disable submit button if there are any input errors
-  function isSubmitButtonDisabled(): boolean {
-    return isErrorShowingItemName || isErrorShowingTargetPrice || isErrorShowingItemLink;
-  }
-
-  // When updating priority
-  function onSelectPriorityChange(event: React.ChangeEvent<HTMLSelectElement>) {
-    const selectValue = event.target.value;
-
-    setItemPriority(parseInt(selectValue));
-  }
-
-  // When updating itemDescription input
-  function onTextAreaItemDescriptionChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
-    setItemDescription(event.target.value);
-  }
-
-  // When unfocusing itemDescription input
-  function onTextAreaItemDescriptionBlur(event: React.ChangeEvent<HTMLTextAreaElement>) {
-    setItemDescription(event.target.value.trim());
-  }
-
   // Update modal title based on if you are in edit mode or not
   function getModalTitle(): string {
     return isOnEditMode
@@ -307,59 +262,53 @@ export default function ModalAddEditItem () {
     >
       <form
         className="px-6 relative max-w-3xl mx-auto my-0"
-        onSubmit={onFormSubmit}
+        onSubmit={handleSubmit(onFormSubmit)}
+        noValidate
       >
         <InputDefault
           label="Name"
+          register={register('name')}
           isRequired={true}
           extraClasses="mb-4"
-          inputValue={itemName}
-          errorMessage="This cannot be empty"
-          onChange={onInputItemNameChange}
-          onBlur={onInputItemNameBlur}
-          isErrorShowing={isErrorShowingItemName}
+          isErrorShowing={!!errors.name}
+          errorMessage={errors.name?.message}
         />
 
         <InputNumber
           label="Target Price"
+          register={register('price')}
           isRequired={true}
-          extraClasses="my-4"
-          inputValue={targetPrice}
-          errorMessage="This cannot be empty or zero"
-          onChange={onInputNumberChange}
-          onBlur={onInputNumberBlur}
-          onKeyDown={onInputNumberKeyDown}
-          isErrorShowing={isErrorShowingTargetPrice}
+          isErrorShowing={!!errors.price}
+          errorMessage={errors.price?.message}
+          extraClasses="mb-4"
         />
 
         <InputDefault
           label="Item link"
+          register={register('url')}
+          isErrorShowing={!!errors.url}
+          errorMessage={errors.url?.message}
           extraClasses="my-4"
-          inputValue={itemLink}
-          errorMessage="Enter a valid url"
-          onChange={onInputItemLinkChange}
-          onBlur={onInputItemLinkBlur}
-          isErrorShowing={isErrorShowingItemLink}
         />
 
         <SelectPriority
           label="Priority"
           name="priority"
           options={priorityOptions}
-          selectValue={itemPriority}
-          onChange={onSelectPriorityChange}
+          register={register('priority', { valueAsNumber: true })}
+          defaultValue={DEFAULT_PRIORITY.toString()}
         />
 
         <TextAreaDefault
           label="Item Description"
           extraClasses="my-4"
-          inputValue={itemDescription}
-          onChange={onTextAreaItemDescriptionChange}
-          onBlur={onTextAreaItemDescriptionBlur}
+          register={register('description')}
+          isErrorShowing={!!errors.description}
+          errorMessage={errors.description?.message}
         />
 
         <div className="fixed md:relative w-full left-0 bottom-0 p-4 md:p-0 border-t md:border-t-0 border-black">
-          <ButtonDefault buttonText={getButtonText()} onClick={() => {}} extraClasses="w-full" isDisabled={isSubmitButtonDisabled()} />
+          <ButtonDefault buttonText={getButtonText()} onClick={() => {}} extraClasses="w-full" />
         </div>
       </form>
     </ModalDefault>

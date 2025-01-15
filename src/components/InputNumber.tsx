@@ -7,23 +7,21 @@ import LabelDefault from '@/components/LabelDefault';
 
 // React
 import { useId } from 'react';
+import { UseFormRegisterReturn } from 'react-hook-form';
 
 // Utils
 import getInputErrorClasses from '@/utils/getInputErrorClasses';
 
-interface InputNumberProps {
+interface InputNumberProps<T extends string> {
   label: string;
-  inputValue: string;
   isErrorShowing?: boolean;
   errorMessage?: string;
   isRequired?: boolean;
   extraClasses?: string;
-  onBlur: () => void;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+  register?: UseFormRegisterReturn<T>;
 }
 
-export default function InputNumber({ label, inputValue, isErrorShowing = false, errorMessage = '', isRequired = false, extraClasses = '', onBlur, onChange, onKeyDown }: InputNumberProps) {
+export default function InputNumber<T extends string>({ label, isErrorShowing = false, errorMessage = '', isRequired = false, extraClasses = '', register }: InputNumberProps<T>) {
   // Id
   const inputId = useId();
 
@@ -35,12 +33,8 @@ export default function InputNumber({ label, inputValue, isErrorShowing = false,
         type="number"
         id={inputId}
         name={label.toLowerCase()}
-        value={inputValue}
         className={`block border rounded-md text-sm px-3 py-2 focus:outline-none focus:border-black transition-colors w-full ${getInputErrorClasses(isErrorShowing)}`}
-        step="0.01"
-        onKeyDown={onKeyDown}
-        onChange={onChange}
-        onBlur={() => onBlur()}
+        {...register}
       />
 
       {

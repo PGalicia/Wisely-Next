@@ -26,7 +26,6 @@ import { setWishlist, setBudget } from '@/redux/features/wishlistSlice';
 // Types
 import type { WishlistType } from '@/types/WishlistType';
 
-// async function HomePage() {
 export default function MainHome() {
   // Dispatch
   const dispatch = useDispatch<AppDispatch>();
