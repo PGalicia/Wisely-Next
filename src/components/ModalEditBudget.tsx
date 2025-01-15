@@ -48,8 +48,7 @@ export default function ModalEditBudget() {
   const {
     register,
     handleSubmit,
-    setError,
-    formState: { errors, isSubmitting }
+    formState: { errors }
   } = useForm<EditBudgetFormInputs>({
     defaultValues: {
       budget: budgetSelector.toString(),

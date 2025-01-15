@@ -100,9 +100,7 @@ export default function ModalAddEditItem () {
   const {
     register,
     handleSubmit,
-    setError,
-    setValue,
-    formState: { errors, isSubmitting }
+    formState: { errors }
   } = useForm<AddEditWishlistFormInputs>({
     defaultValues: {
       name: targetItemName || '',
